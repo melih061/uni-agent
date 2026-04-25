@@ -1355,6 +1355,17 @@
 
   <!-- GitHub Gist -->
   <div class="settings-block">
+    <div class="settings-block-title">Server-Verbindung</div>
+    <div class="settings-desc">Standard: <code style="font-family:var(--f-mono);font-size:12px">http://localhost:8000</code> (Mac).<br>Für Handy im Heimnetz die IP deines Macs eintragen, z.B. <code style="font-family:var(--f-mono);font-size:12px">http://192.168.2.30:8000</code></div>
+    <div class="s-row">
+      <input class="s-input" id="server-url-input" type="text" placeholder="http://localhost:8000">
+      <button class="s-btn" onclick="saveServerUrl()">Speichern</button>
+    </div>
+    <button class="s-btn-full" onclick="testServerConnection()">Verbindung testen</button>
+    <div class="s-status" id="server-url-status"></div>
+  </div>
+
+  <div class="settings-block">
     <div class="settings-block-title">☁ GitHub Gist Backup</div>
     <div class="settings-desc">Dein Fortschritt wird automatisch als privates GitHub Gist gesichert — bleibt erhalten auch wenn du den Browser-Cache leerst.<br><br>Token erstellen: github.com → Settings → Developer settings → Personal access tokens → Scope: <strong>gist</strong></div>
     <div class="s-row">
@@ -1433,10 +1444,11 @@ function switchTab(i) {
 }
 
 // ── Abgaben ──────────────────────────────────────────────
-// Auf Handy: gleiche IP wie Mac im Heimnetz verwenden
-const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-  ? 'http://localhost:8000'
-  : `http://${location.hostname}:8000`;
+// Server-URL aus localStorage, Fallback: localhost
+function getApiBase() {
+  return localStorage.getItem('syn-server-url') || 'http://localhost:8000';
+}
+let API_BASE = getApiBase();
 let _deadlinesCache = null;
 
 async function fetchDeadlines() {
@@ -1774,7 +1786,31 @@ function saveGistToken() {
   alert('✓ Token gespeichert! Erstes Backup läuft…');
 }
 
+function saveServerUrl() {
+  const input = document.getElementById('server-url-input');
+  const url   = input.value.trim() || 'http://localhost:8000';
+  localStorage.setItem('syn-server-url', url);
+  API_BASE = url;
+  _deadlinesCache = null;
+  document.getElementById('server-url-status').textContent = `Gespeichert: ${url}`;
+}
+
+async function testServerConnection() {
+  const el = document.getElementById('server-url-status');
+  el.textContent = 'Teste Verbindung…';
+  try {
+    const res = await fetch(`${getApiBase()}/`, { signal: AbortSignal.timeout(5000) });
+    el.textContent = res.ok ? `Verbunden mit ${getApiBase()}` : `Fehler: HTTP ${res.status}`;
+  } catch(e) {
+    el.textContent = `Nicht erreichbar: ${getApiBase()}`;
+  }
+}
+
 function refreshSettingsStatus() {
+  // Server-URL vorausfüllen
+  const urlInput = document.getElementById('server-url-input');
+  if (urlInput) urlInput.value = getApiBase();
+
   const hasToken = !!localStorage.getItem('syn-gist-token');
   const gistId   = localStorage.getItem('syn-gist-id');
   const last     = localStorage.getItem('syn-gist-last');
