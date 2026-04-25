@@ -143,7 +143,7 @@ async def chat(req: ChatRequest) -> dict:
 
     client = get_client()
     messages = req.history + [{"role": "user", "content": req.message}]
-    response = await asyncio.to_thread(client.chat, system=system, messages=messages)
+    response = await asyncio.to_thread(client.chat, system=system, messages=messages, max_tokens=4096)
     return {"response": response}
 
 
