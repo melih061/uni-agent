@@ -169,6 +169,17 @@ async def lea_refresh() -> dict:
     return {"deadlines": len(deadlines), "lea_context_chars": len(lea_context)}
 
 
+@app.on_event("startup")
+async def startup_preload() -> None:
+    """Lädt Deadlines und LEA-Kontext beim Serverstart im Hintergrund vor."""
+    async def _preload() -> None:
+        await asyncio.sleep(3)  # kurz warten bis uvicorn vollständig ready ist
+        await get_deadlines_cached()
+        await get_lea_context_cached()
+        print("Startup-Preload abgeschlossen.")
+    asyncio.create_task(_preload())
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
