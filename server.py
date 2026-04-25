@@ -67,7 +67,7 @@ async def get_lea_context_cached(force: bool = False) -> str:
     if force or not _lea_ctx_cache or time.time() - _lea_ctx_cache_ts > _CACHE_TTL:
         from scraper.lea_context import scrape_lea_full_context
         contexts = await scrape_lea_full_context(headless=True)
-        _lea_ctx_cache = "\n\n".join(c.to_text() for c in contexts if c.announcements or c.exercises or c.materials or c.pdf_contents)
+        _lea_ctx_cache = "\n\n".join(c.to_text() for c in contexts if c.announcements or c.exercises or c.materials or c.file_contents)
         _lea_ctx_cache_ts = time.time()
     return _lea_ctx_cache
 

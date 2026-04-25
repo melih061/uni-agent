@@ -27,8 +27,9 @@ IGNORED_COURSES = {
 FORUM_KEYWORDS = {"nachricht", "neuigkeit", "ankündigung", "news", "forum"}
 MATERIAL_TYPES = {"pdf", "zip", "pptx", "docx", "xlsx", "mp4", "py", "ipynb", "ppt", "xls"}
 
-MAX_PDFS_PER_COURSE = 8
-MAX_CHARS_PER_PDF   = 6000
+MAX_FILES_PER_COURSE = 10
+MAX_CHARS_PER_FILE   = 6000
+EXTRACTABLE = {"pdf", "zip"}
 
 
 @dataclass
@@ -37,7 +38,7 @@ class CourseContext:
     announcements: list[str]       = field(default_factory=list)
     materials: list[str]           = field(default_factory=list)
     exercises: list[str]           = field(default_factory=list)
-    pdf_contents: list[tuple[str, str]] = field(default_factory=list)  # (title, text)
+    file_contents: list[tuple[str, str]] = field(default_factory=list)  # (title, text)
 
     def to_text(self) -> str:
         parts = [f"=== {self.course} ==="]
@@ -50,11 +51,11 @@ class CourseContext:
         if self.materials:
             parts.append("Materialien (Dateiliste):")
             parts.extend(f"  • {m}" for m in self.materials[:20])
-        if self.pdf_contents:
-            parts.append("PDF-Inhalte:")
-            for title, text in self.pdf_contents:
+        if self.file_contents:
+            parts.append("Datei-Inhalte (PDFs & ZIPs):")
+            for title, text in self.file_contents:
                 parts.append(f"\n--- {title} ---")
-                parts.append(text[:MAX_CHARS_PER_PDF])
+                parts.append(text[:MAX_CHARS_PER_FILE])
         return "\n".join(parts)
 
 
@@ -75,48 +76,10 @@ async def _login(page: Page, username: str, password: str) -> bool:
     return "ilDashboardGUI" in page.url
 
 
-async def _download_pdf(page: Page, url: str) -> bytes:
-    """Lädt eine PDF über die authentifizierte Playwright-Session."""
-    try:
-        resp = await page.request.get(url, timeout=30000)
-        if resp.status == 200 and "pdf" in resp.headers.get("content-type", ""):
-            return await resp.body()
-    except Exception:
-        pass
-    return b""
 
-
-def _extract_pdf_text(pdf_bytes: bytes) -> str:
-    """Extrahiert Text aus PDF-Bytes via pymupdf."""
-    try:
-        import pymupdf
-        doc = pymupdf.open(stream=pdf_bytes, filetype="pdf")
-        pages: list[str] = []
-        total = 0
-        for i, page in enumerate(doc):
-            if i >= 80 or total >= MAX_CHARS_PER_PDF:
-                break
-            text = page.get_text("text").strip()
-            if text:
-                pages.append(f"[Seite {i+1}]\n{text}")
-                total += len(text)
-        doc.close()
-        return "\n\n".join(pages)[:MAX_CHARS_PER_PDF]
-    except Exception:
-        return ""
-
-
-async def _fetch_pdf_text_cached(page: Page, url: str, title: str) -> str:
-    from scraper.pdf_extractor import _load_cached_text, _save_cached_text
-    cached = _load_cached_text(url)
-    if cached is not None:
-        return cached
-    pdf_bytes = await _download_pdf(page, url)
-    if not pdf_bytes:
-        return ""
-    text = _extract_pdf_text(pdf_bytes)
-    _save_cached_text(url, text)
-    return text
+async def _fetch_file_text_cached(page: Page, url: str, title: str, ext: str) -> str:
+    from scraper.pdf_extractor import fetch_and_extract
+    return await fetch_and_extract(page, url, title, ext=ext)
 
 
 async def _scrape_forum_posts(page: Page, url: str) -> list[str]:
@@ -146,7 +109,7 @@ async def _scrape_folder(
     page: Page,
     url: str,
     ctx: CourseContext,
-    pdf_queue: list[tuple[str, str]],
+    file_queue: list[tuple[str, str, str]],
     prefix: str = "",
     depth: int = 0,
     max_depth: int = 2,
@@ -189,8 +152,8 @@ async def _scrape_folder(
                 if ext in MATERIAL_TYPES:
                     date_prop = next((p for p in props if any(c.isdigit() for c in p) and p != prop), "")
                     ctx.materials.append(f"{label} [{ext}]{' — ' + date_prop if date_prop else ''}")
-                    if ext == "pdf" and len(pdf_queue) < MAX_PDFS_PER_COURSE:
-                        pdf_queue.append((label, item_url))
+                    if ext in EXTRACTABLE and len(file_queue) < MAX_FILES_PER_COURSE:
+                        file_queue.append((label, item_url, ext))
                     break
             else:
                 avail = next((p for p in props if "Verfügbarkeit" in p and "Kein Datum" not in p), "")
@@ -202,7 +165,7 @@ async def _scrape_folder(
             ctx.announcements.extend(posts)
 
         for sub_label, sub_url in sub_folders[:8]:
-            await _scrape_folder(page, sub_url, ctx, pdf_queue,
+            await _scrape_folder(page, sub_url, ctx, file_queue,
                                  prefix=f"{sub_label} / ", depth=depth + 1)
 
     except Exception:
@@ -211,7 +174,7 @@ async def _scrape_folder(
 
 async def _scrape_course(page: Page, course: dict) -> CourseContext:
     ctx = CourseContext(course=course["title"])
-    pdf_queue: list[tuple[str, str]] = []
+    file_queue: list[tuple[str, str, str]] = []  # (title, url, ext)
 
     try:
         await page.goto(course["url"], wait_until="domcontentloaded")
@@ -243,8 +206,8 @@ async def _scrape_course(page: Page, course: dict) -> CourseContext:
                     if ext in MATERIAL_TYPES:
                         date_prop = next((p for p in props if any(c.isdigit() for c in p) and p != prop), "")
                         ctx.materials.append(f"{title} [{ext}]{' — ' + date_prop if date_prop else ''}")
-                        if ext == "pdf" and len(pdf_queue) < MAX_PDFS_PER_COURSE:
-                            pdf_queue.append((title, item_url))
+                        if ext in EXTRACTABLE and len(file_queue) < MAX_FILES_PER_COURSE:
+                            file_queue.append((title, item_url, ext))
                         break
 
         for furl in forum_urls[:3]:
@@ -252,17 +215,17 @@ async def _scrape_course(page: Page, course: dict) -> CourseContext:
             ctx.announcements.extend(posts)
 
         for folder_title, folder_url in folder_items[:6]:
-            await _scrape_folder(page, folder_url, ctx, pdf_queue, prefix="", depth=0)
+            await _scrape_folder(page, folder_url, ctx, file_queue, prefix="", depth=0)
 
     except Exception:
         pass
 
-    # PDF-Inhalte herunterladen
-    for pdf_title, pdf_url in pdf_queue[:MAX_PDFS_PER_COURSE]:
-        text = await _fetch_pdf_text_cached(page, pdf_url, pdf_title)
+    # Dateien herunterladen und Text extrahieren
+    for f_title, f_url, f_ext in file_queue[:MAX_FILES_PER_COURSE]:
+        text = await _fetch_file_text_cached(page, f_url, f_title, f_ext)
         if text.strip():
-            ctx.pdf_contents.append((pdf_title, text))
-        print(f"    PDF: {pdf_title[:50]} — {len(text)} Zeichen")
+            ctx.file_contents.append((f_title, text))
+        print(f"    [{f_ext.upper()}] {f_title[:50]} — {len(text)} Zeichen")
 
     return ctx
 
@@ -291,7 +254,7 @@ async def scrape_lea_full_context(headless: bool = True) -> list[CourseContext]:
             results.append(ctx)
             print(f"  {course['title']}: {len(ctx.announcements)} Ankündigungen, "
                   f"{len(ctx.exercises)} Aufgaben, {len(ctx.materials)} Materialien, "
-                  f"{len(ctx.pdf_contents)} PDFs")
+                  f"{len(ctx.file_contents)} Dateien (PDF/ZIP)")
 
         await browser.close()
     return results
