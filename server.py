@@ -67,9 +67,16 @@ async def get_lea_context_cached(force: bool = False) -> str:
     if force or not _lea_ctx_cache or time.time() - _lea_ctx_cache_ts > _CACHE_TTL:
         from scraper.lea_context import scrape_lea_full_context
         contexts = await scrape_lea_full_context(headless=True)
-        _lea_ctx_cache = "\n\n".join(c.to_text() for c in contexts if c.announcements or c.exercises or c.materials)
+        _lea_ctx_cache = "\n\n".join(c.to_text() for c in contexts if c.announcements or c.exercises or c.materials or c.pdf_contents)
         _lea_ctx_cache_ts = time.time()
     return _lea_ctx_cache
+
+
+def get_lea_context_if_ready() -> str:
+    """Gibt den LEA-Kontext zurück wenn bereits gecacht, sonst leeren String."""
+    if _lea_ctx_cache and time.time() - _lea_ctx_cache_ts <= _CACHE_TTL * 2:
+        return _lea_ctx_cache
+    return ""
 
 
 def _build_system_prompt(deadlines: list[dict], lea_context: str = "") -> str:
@@ -135,10 +142,15 @@ class ChatRequest(BaseModel):
 async def chat(req: ChatRequest) -> dict:
     from agent.llm_client import get_client
 
-    deadlines, lea_context = await asyncio.gather(
-        get_deadlines_cached(),
-        get_lea_context_cached(),
-    )
+    # Deadlines immer laden (schnell, ~5s). LEA-Kontext nur wenn bereits im Cache —
+    # sonst antwortet der Chat sofort ohne zu blockieren.
+    deadlines = await get_deadlines_cached()
+    lea_context = get_lea_context_if_ready()
+
+    # Falls noch kein LEA-Cache: im Hintergrund laden für nächste Anfrage
+    if not lea_context:
+        asyncio.create_task(get_lea_context_cached())
+
     system = _build_system_prompt(deadlines, lea_context)
 
     client = get_client()
