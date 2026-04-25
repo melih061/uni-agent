@@ -520,6 +520,55 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
     #gcal-links a { display:block; padding:8px 12px; margin-bottom:4px; background:var(--bg-2); color:var(--tx-0); text-decoration:none; font-family:var(--f-mono); font-size:11px; border:1px solid var(--bd); }
     #gcal-links a:hover { border-color:var(--violet); color:var(--violet); }
+
+    /* ══════ ABGABEN TAB ══════ */
+    .deadline-card {
+      background: var(--bg-1);
+      border: 1px solid var(--bd);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .dl-urgency {
+      width: 4px;
+      min-height: 48px;
+      flex-shrink: 0;
+      border-radius: 2px;
+    }
+    .dl-urgency.red  { background: var(--err); }
+    .dl-urgency.yellow { background: var(--warn); }
+    .dl-urgency.green  { background: var(--ok); }
+    .dl-body { flex: 1; min-width: 0; }
+    .dl-title { font-weight: 600; font-size: 14px; color: var(--tx-0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dl-meta  { font-family: var(--f-mono); font-size: 11px; color: var(--tx-2); margin-top: 3px; }
+    .dl-days  { font-family: var(--f-mono); font-size: 12px; font-weight: 600; flex-shrink: 0; }
+    .dl-days.red    { color: var(--err); }
+    .dl-days.yellow { color: var(--warn); }
+    .dl-days.green  { color: var(--ok); }
+    .dl-empty { text-align: center; color: var(--tx-2); font-size: 14px; padding: 40px 0; }
+    .dl-loading { text-align: center; color: var(--violet); font-family: var(--f-mono); font-size: 12px; padding: 32px 0; }
+    .dl-refresh { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .dl-refresh-btn { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--bg-2); border: 1px solid var(--bd); color: var(--tx-1); padding: 7px 14px; cursor: pointer; transition: all var(--t-fast); }
+    .dl-refresh-btn:hover { border-color: var(--violet); color: var(--violet); }
+    .dl-last-update { font-family: var(--f-mono); font-size: 10px; color: var(--tx-3); }
+
+    /* ══════ CHAT TAB ══════ */
+    .chat-wrap   { display: flex; flex-direction: column; height: calc(100dvh - 120px); max-height: 700px; }
+    .chat-msgs   { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
+    .chat-bubble { max-width: 85%; padding: 10px 14px; font-size: 14px; line-height: 1.55; }
+    .chat-bubble.user  { background: var(--violet); color: #fff; align-self: flex-end; }
+    .chat-bubble.bot   { background: var(--bg-2); color: var(--tx-0); align-self: flex-start; border: 1px solid var(--bd); }
+    .chat-bubble.typing { opacity: 0.6; font-style: italic; }
+    .chat-input-row { display: flex; gap: 8px; margin-top: 12px; border-top: 1px solid var(--bd); padding-top: 12px; }
+    .chat-input    { flex: 1; background: var(--bg-1); border: 1px solid var(--bd); color: var(--tx-0); font-family: var(--f-body); font-size: 14px; padding: 10px 14px; outline: none; transition: border-color var(--t-fast); }
+    .chat-input:focus { border-color: var(--violet); }
+    .chat-send  { background: var(--violet); color: #fff; border: none; padding: 10px 20px; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background var(--t-fast); }
+    .chat-send:hover { background: var(--violet-dim); }
+    .chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+    [data-theme="dark"] .chat-bubble.bot { background: var(--bg-dark2); border-color: var(--violet-line); }
+    [data-theme="dark"] .chat-input { background: var(--bg-dark1); border-color: var(--violet-line); }
   </style>
 </head>
 <body>
@@ -567,6 +616,8 @@
   <button class="tab-btn" onclick="switchTab(5)">Goldene Regeln</button>
   <button class="tab-btn" onclick="switchTab(6)">Fortschritt</button>
   <button class="tab-btn" onclick="switchTab(7)">Einstellungen</button>
+  <button class="tab-btn" onclick="switchTab(8)">Abgaben</button>
+  <button class="tab-btn" onclick="switchTab(9)">Chat</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -1307,6 +1358,36 @@
   </div>
 </div>
 
+<!-- ══════ TAB 8 — ABGABEN ══════ -->
+<div class="view" id="v8">
+  <span class="eyebrow">Automatisch aus LEA & Analysis</span>
+  <h2 class="section-title">Offene Abgaben</h2>
+  <p class="section-desc">Fristen werden live aus LEA, der Analysis-Seite und ACAT geladen. Starte dafür den lokalen Server: <code style="font-family:var(--f-mono);font-size:12px;background:var(--bg-2);padding:2px 6px">python server.py</code></p>
+
+  <div class="dl-refresh">
+    <button class="dl-refresh-btn" onclick="loadDeadlines()">Neu laden</button>
+    <span class="dl-last-update" id="dl-last-update"></span>
+  </div>
+
+  <div id="dl-list"><div class="dl-loading">Server starten um Fristen zu laden…</div></div>
+</div>
+
+<!-- ══════ TAB 9 — CHAT ══════ -->
+<div class="view" id="v9">
+  <span class="eyebrow">Powered by Gemini</span>
+  <h2 class="section-title">Lern-Assistent</h2>
+
+  <div class="chat-wrap">
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="chat-bubble bot">Hey! Ich bin dein Lern-Assistent. Frag mich zu Analysis, Datenbanken, ADS, KI oder was auch immer gerade ansteht.</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" type="text" placeholder="Frag mich was…" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" id="chat-send-btn" onclick="sendChat()">Senden</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════ SCRIPT ══════ -->
 <script>
 // ── Tab switching ──────────────────────────────────────
@@ -1316,6 +1397,84 @@ function switchTab(i) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (i === 6) renderProgress();
   if (i === 7) refreshSettingsStatus();
+  if (i === 8) loadDeadlines();
+}
+
+// ── Abgaben ──────────────────────────────────────────────
+const API_BASE = 'http://localhost:8000';
+
+async function loadDeadlines() {
+  const list = document.getElementById('dl-list');
+  const upd  = document.getElementById('dl-last-update');
+  list.innerHTML = '<div class="dl-loading">Lade Fristen vom Server…</div>';
+  try {
+    const res  = await fetch(`${API_BASE}/api/deadlines`, { signal: AbortSignal.timeout(60000) });
+    const data = await res.json();
+    upd.textContent = 'Aktualisiert: ' + new Date().toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'});
+    if (!data.length) { list.innerHTML = '<div class="dl-empty">Keine Fristen gefunden.</div>'; return; }
+    const now = new Date();
+    list.innerHTML = data.map(d => {
+      const due  = new Date(d.due_date);
+      const days = Math.ceil((due - now) / 86400000);
+      const cls  = days <= 7 ? 'red' : days <= 14 ? 'yellow' : 'green';
+      const daysLabel = days < 0 ? 'Abgelaufen' : days === 0 ? 'Heute!' : `${days}d`;
+      return `<div class="deadline-card">
+        <div class="dl-urgency ${cls}"></div>
+        <div class="dl-body">
+          <div class="dl-title">${d.title}</div>
+          <div class="dl-meta">${d.course} · ${d.type} · ${due.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})} ${due.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div class="dl-days ${cls}">${daysLabel}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="dl-empty">Server nicht erreichbar.<br><code style="font-family:var(--f-mono);font-size:12px">python server.py</code> starten.</div>';
+  }
+}
+
+// ── Chat ─────────────────────────────────────────────────
+const chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const btn   = document.getElementById('chat-send-btn');
+  const msgs  = document.getElementById('chat-msgs');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  btn.disabled = true;
+
+  msgs.innerHTML += `<div class="chat-bubble user">${text.replace(/</g,'&lt;')}</div>`;
+  const typing = document.createElement('div');
+  typing.className = 'chat-bubble bot typing';
+  typing.id = 'chat-typing';
+  typing.textContent = 'Tippt…';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  chatHistory.push({ role: 'user', content: text });
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, history: chatHistory.slice(0,-1) }),
+      signal: AbortSignal.timeout(30000),
+    });
+    const data = await res.json();
+    const reply = data.response || '(keine Antwort)';
+    chatHistory.push({ role: 'assistant', content: reply });
+    document.getElementById('chat-typing').outerHTML =
+      `<div class="chat-bubble bot">${reply.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
+  } catch(e) {
+    document.getElementById('chat-typing').outerHTML =
+      `<div class="chat-bubble bot">Server nicht erreichbar. <code>python server.py</code> starten.</div>`;
+  }
+
+  msgs.scrollTop = msgs.scrollHeight;
+  btn.disabled = false;
+  input.focus();
 }
 
 // ── Theme ──────────────────────────────────────────────
