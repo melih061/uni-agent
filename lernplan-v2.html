@@ -1449,6 +1449,18 @@ function getApiBase() {
   return localStorage.getItem('syn-server-url') || 'http://localhost:8000';
 }
 let API_BASE = getApiBase();
+
+// Warnung wenn über HTTPS (GitHub Pages) aufgerufen — Chat/Abgaben funktionieren nicht
+(function() {
+  if (location.protocol === 'https:') {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#DC2626;color:#fff;font-family:monospace;font-size:13px;padding:10px 16px;z-index:9999;display:flex;justify-content:space-between;align-items:center';
+    banner.innerHTML = `
+      <span>Chat & Abgaben nur über lokalen Server. Mac: <a href="http://localhost:8000" style="color:#fff;font-weight:bold;text-decoration:underline">localhost:8000</a> · Handy: <a href="http://192.168.2.30:8000" style="color:#fff;font-weight:bold;text-decoration:underline">192.168.2.30:8000</a></span>
+      <button onclick="this.parentElement.remove()" style="background:none;border:1px solid rgba(255,255,255,0.5);color:#fff;padding:2px 8px;cursor:pointer;font-family:monospace">✕</button>`;
+    document.body.appendChild(banner);
+  }
+})();
 let _deadlinesCache = null;
 
 async function fetchDeadlines() {
@@ -1509,7 +1521,10 @@ async function loadDeadlines(force = false) {
       </div>`;
     }).join('');
   } catch(e) {
-    list.innerHTML = '<div class="dl-empty">Server nicht erreichbar.<br><code style="font-family:var(--f-mono);font-size:12px">python server.py</code> starten.</div>';
+    list.innerHTML = `<div class="dl-empty">Server nicht erreichbar.<br>
+      Mac: <a href="http://localhost:8000" style="color:var(--violet)">localhost:8000</a> öffnen<br>
+      Handy: <code style="font-family:var(--f-mono);font-size:12px">http://192.168.2.30:8000</code> aufrufen<br>
+      <small style="color:var(--tx-2)">(aktuell: ${API_BASE})</small></div>`;
   }
 }
 
@@ -1581,7 +1596,7 @@ async function sendChat() {
       `<div class="chat-bubble bot">${reply.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
   } catch(e) {
     document.getElementById('chat-typing').outerHTML =
-      `<div class="chat-bubble bot">Server nicht erreichbar. <code>python server.py</code> starten.</div>`;
+      `<div class="chat-bubble bot">Server nicht erreichbar.<br>Mac: <a href="http://localhost:8000" style="color:var(--violet-mid)">localhost:8000</a> öffnen · Handy: <code>http://192.168.2.30:8000</code></div>`;
   }
 
   msgs.scrollTop = msgs.scrollHeight;
