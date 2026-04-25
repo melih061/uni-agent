@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lernplan · SoSe 2026</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="theme-color" content="#7C3AED">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lernplan">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════════════════════
+       SYNOTIX DESIGN SYSTEM V3.0 — VIOLET · LIGHT-FIRST
+    ══════════════════════════════════════════════════════ */
+    :root {
+      --bg-0:    #FFFFFF;
+      --bg-1:    #F9F8FF;
+      --bg-2:    #F0EEF9;
+      --bg-3:    #E6E2F5;
+      --bg-4:    #D8D3EF;
+      --bg-dark:  #0C0A14;
+      --bg-dark1: #12101C;
+      --bg-dark2: #1A1726;
+      --bg-dark3: #221F30;
+      --violet:      #7C3AED;
+      --violet-dim:  #6D28D9;
+      --violet-mid:  #9F67F5;
+      --violet-deep: #4C1D95;
+      --violet-glow: rgba(124,58,237,0.10);
+      --violet-line: rgba(124,58,237,0.25);
+      --tx-0: #0C0A14;
+      --tx-1: #3D3858;
+      --tx-2: #8580A0;
+      --tx-3: #B0ACCB;
+      --tx-inv:  #F5F3FF;
+      --tx-inv1: #A8A4BF;
+      --bd:      rgba(0,0,0,0.07);
+      --bd-hi:   rgba(0,0,0,0.13);
+      --ok:   #16A34A;
+      --warn: #D97706;
+      --err:  #DC2626;
+      --info: #2563EB;
+      --f-display: 'Lora', Georgia, serif;
+      --f-body:    'Space Grotesk', system-ui, sans-serif;
+      --f-mono:    'JetBrains Mono', monospace;
+      --t-fast: 150ms ease;
+      --t-base: 250ms ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-0);
+      color: var(--tx-0);
+      font-family: var(--f-body);
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ══════ TOPBAR ══════ */
+    .topbar {
+      background: var(--bg-dark);
+      border-bottom: 1px solid var(--violet-line);
+      padding: 0 20px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-brand { display: flex; align-items: center; gap: 0; }
+    .topbar-mark { width: 26px; height: 28px; flex-shrink: 0; }
+    .topbar-sep {
+      width: 1px;
+      height: 28px;
+      background: linear-gradient(180deg, transparent 0%, var(--violet-mid) 25%, var(--violet-mid) 75%, transparent 100%);
+      opacity: 0.55;
+      margin: 0 13px;
+      flex-shrink: 0;
+    }
+    .topbar-wordmark {
+      font-family: var(--f-mono);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--tx-inv);
+      line-height: 1;
+    }
+    .topbar-subtitle {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tx-inv1);
+      padding-left: 1px;
+    }
+
+    /* ══════ TABS ══════ */
+    .tab-strip {
+      background: var(--bg-1);
+      border-bottom: 1px solid var(--bd);
+      display: flex;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+    }
+    .tab-btn {
+      flex: 0 0 auto;
+      padding: 12px 16px 10px;
+      font-family: var(--f-mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--tx-2);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--t-fast);
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      color: var(--violet);
+      border-bottom-color: var(--violet);
+    }
+    .tab-btn:hover:not(.active) { color: var(--tx-1); }
+
+    /* ══════ VIEWS ══════ */
+    .view { display: none; padding: 24px 16px 48px; max-width: 720px; margin: 0 auto; }
+    .view.active { display: block; }
+
+    /* ══════ TYPOGRAPHY ══════ */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--violet);
+      margin-bottom: 10px;
+    }
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--violet);
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-family: var(--f-display);
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--tx-0);
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+
+    .section-desc {
+      font-size: 14px;
+      color: var(--tx-1);
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+
+    .section-rule {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--bd-hi) 20%, var(--bd-hi) 80%, transparent);
+      border: none;
+      margin: 28px 0;
+    }
+
+    /* ══════ COUNTDOWN ══════ */
+    .countdown {
+      background: var(--bg-dark);
+      border: 1px solid rgba(124,58,237,0.20);
+      padding: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .cd-num {
+      font-family: var(--f-display);
+      font-size: 48px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--violet-mid) 0%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .cd-body { flex: 1; }
+    .cd-label {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--tx-inv1);
+    }
+    .cd-sub { font-size: 13px; color: var(--tx-inv1); margin-top: 3px; }
+    .cd-bar { width: 100%; height: 3px; background: var(--bg-dark3); margin-top: 10px; }
+    .cd-fill { height: 100%; background: linear-gradient(90deg, var(--violet-deep), var(--violet-mid)); transition: width 0.6s; }
+
+    /* ══════ STAT GRID ══════ */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--bg-1);
+      border: 1px solid var(--bd);
+      padding: 16px;
+    }
+    .stat-val {
+      font-family: var(--f-display);
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--tx-0);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-lbl {
+      font-family: var(--f-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tx-2);
+    }
+
+    /* ══════ PHASE CARDS ══════ */
+    .phase { background: var(--bg-1); border: 1px solid var(--bd); margin-bottom: 2px; position: relative; padding: 20px; }
+    .phase::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+    .phase.p1::before { background: var(--ok); }
+    .phase.p2::before { background: var(--info); }
+    .phase.p3::before { background: var(--err); }
+    .phase.current { background: var(--violet-glow); border-color: var(--violet-line); }
+    .phase.current::before { background: var(--violet); }
+
+    .phase-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .phase-num { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tx-2); }
+    .phase-badge {
+      font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 2px 8px; border: 1px solid;
+    }
+    .badge-current { color: var(--violet); background: var(--violet-glow); border-color: var(--violet-line); }
+    .badge-later { color: var(--tx-2); background: var(--bg-2); border-color: var(--bd); }
+
+    .phase-name { font-family: var(--f-display); font-size: 19px; font-weight: 500; color: var(--tx-0); margin-bottom: 3px; }
+    .phase-dates { font-family: var(--f-mono); font-size: 10px; color: var(--tx-2); letter-spacing: 0.08em; margin-bottom: 12px; }
+    .phase-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .phase-list li { font-size: 13px; color: var(--tx-1); padding-left: 18px; position: relative; line-height: 1.55; }
+    .phase-list li::before { content: '→'; position: absolute; left: 0; color: var(--violet); font-size: 12px; }
+
+    /* ══════ WEEKLY SCHEDULE ══════ */
+    .day-row { background: var(--bg-1); border: 1px solid var(--bd); margin-bottom: 2px; overflow: hidden; }
+    .day-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px;
+      cursor: pointer; user-select: none;
+      transition: background var(--t-fast);
+    }
+    .day-header:hover { background: var(--bg-2); }
+    .day-name { font-family: var(--f-display); font-size: 17px; font-weight: 500; color: var(--tx-0); min-width: 100px; }
+    .day-type {
+      font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 2px 8px; border: 1px solid;
+    }
+    .dtype-uni { color: var(--violet); background: var(--violet-glow); border-color: var(--violet-line); }
+    .dtype-arbeit { color: var(--info); background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.20); }
+    .dtype-lernen { color: var(--ok); background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.20); }
+    .dtype-flex { color: var(--tx-2); background: var(--bg-2); border-color: var(--bd); }
+    .dtype-gym { color: var(--warn); background: rgba(217,119,6,0.08); border-color: rgba(217,119,6,0.20); }
+
+    .day-summary { font-family: var(--f-mono); font-size: 9px; color: var(--tx-2); letter-spacing: 0.06em; text-transform: uppercase; margin-left: auto; }
+    .day-chevron { font-size: 11px; color: var(--tx-3); transition: transform 0.2s; }
+    .day-row.open .day-chevron { transform: rotate(90deg); }
+
+    .day-blocks { display: none; padding: 0 16px 16px; }
+    .day-row.open .day-blocks { display: block; }
+
+    .tblock { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--bd); }
+    .tblock:last-child { border-bottom: none; }
+    .tb-time { font-family: var(--f-mono); font-size: 10px; color: var(--tx-2); letter-spacing: 0.06em; min-width: 85px; padding-top: 2px; }
+    .tb-info { flex: 1; }
+    .tb-title { font-weight: 500; font-size: 14px; color: var(--tx-0); margin-bottom: 2px; }
+    .tb-sub { font-size: 12px; color: var(--tx-2); line-height: 1.45; }
+    .tb-tag {
+      display: inline-block; font-family: var(--f-mono); font-size: 8px;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px;
+      margin-top: 5px; border: 1px solid;
+    }
+    .t-uni { color: var(--violet); background: var(--violet-glow); border-color: var(--violet-line); }
+    .t-pendeln { color: var(--warn); background: rgba(217,119,6,0.08); border-color: rgba(217,119,6,0.20); }
+    .t-lernen { color: var(--ok); background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.20); }
+    .t-arbeit { color: var(--info); background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.20); }
+    .t-startup { color: #7C3AED; background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.18); }
+    .t-gym { color: var(--warn); background: rgba(217,119,6,0.08); border-color: rgba(217,119,6,0.20); }
+    .t-pause { color: var(--tx-3); background: var(--bg-2); border-color: var(--bd); }
+    .t-abgabe { color: var(--err); background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.18); }
+
+    /* ══════ METHOD CARDS ══════ */
+    .mcard { background: var(--bg-1); border: 1px solid var(--bd); margin-bottom: 8px; overflow: hidden; border-top: 2px solid var(--violet); }
+    .mcard.mc-green { border-top-color: var(--ok); }
+    .mcard.mc-blue { border-top-color: var(--info); }
+    .mcard.mc-warn { border-top-color: var(--warn); }
+    .mcard.mc-err { border-top-color: var(--err); }
+
+    .mcard-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; cursor: pointer; user-select: none;
+      transition: background var(--t-fast);
+    }
+    .mcard-head:hover { background: var(--bg-2); }
+    .mcard-icon { font-size: 20px; flex-shrink: 0; }
+    .mcard-titles { flex: 1; }
+    .mcard-title { font-family: var(--f-body); font-weight: 600; font-size: 15px; color: var(--tx-0); }
+    .mcard-sub { font-family: var(--f-mono); font-size: 9px; color: var(--tx-2); letter-spacing: 0.08em; margin-top: 2px; }
+    .mcard-chev { font-size: 11px; color: var(--tx-3); transition: transform 0.2s; }
+    .mcard.open .mcard-chev { transform: rotate(90deg); }
+
+    .mcard-body { display: none; padding: 0 16px 16px; }
+    .mcard.open .mcard-body { display: block; }
+
+    .msteps { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .msteps li { display: flex; gap: 10px; font-size: 13px; color: var(--tx-1); line-height: 1.55; }
+    .mstep-n { font-family: var(--f-mono); font-size: 9px; color: var(--violet); min-width: 18px; padding-top: 3px; }
+
+    .mtip {
+      margin-top: 14px; padding: 12px 14px;
+      background: var(--violet-glow); border-left: 2px solid var(--violet);
+      font-size: 12px; color: var(--tx-1); line-height: 1.55;
+    }
+    .mtip strong { color: var(--violet); }
+
+    /* ══════ MODULE CARDS ══════ */
+    .modcard {
+      background: var(--bg-1); border: 1px solid var(--bd);
+      padding: 20px; margin-bottom: 8px;
+      border-left: 3px solid var(--violet);
+    }
+    .modcard.mod-err { border-left-color: var(--err); }
+    .modcard.mod-info { border-left-color: var(--info); }
+    .modcard.mod-ok { border-left-color: var(--ok); }
+    .modcard.mod-warn { border-left-color: var(--warn); }
+
+    .mod-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+    .mod-name { font-family: var(--f-display); font-size: 18px; font-weight: 500; color: var(--tx-0); }
+    .mod-badge {
+      font-family: var(--f-mono); font-size: 8px; padding: 2px 8px;
+      letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid;
+    }
+    .mbadge-hard { color: var(--err); background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.20); }
+    .mbadge-mid { color: var(--warn); background: rgba(217,119,6,0.08); border-color: rgba(217,119,6,0.20); }
+    .mbadge-ok { color: var(--ok); background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.20); }
+
+    .mod-meta { font-family: var(--f-mono); font-size: 10px; color: var(--tx-2); letter-spacing: 0.08em; margin-bottom: 10px; }
+    .mod-strat { font-size: 13px; color: var(--tx-1); line-height: 1.6; margin-bottom: 12px; }
+    .mod-acts { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .mod-acts li { font-size: 12px; color: var(--tx-1); padding-left: 16px; position: relative; line-height: 1.45; }
+    .mod-acts li::before { content: '✦'; position: absolute; left: 0; font-size: 8px; top: 3px; color: var(--violet); }
+
+    /* ══════ PREP TIMELINE ══════ */
+    .prepw {
+      background: var(--bg-1); border: 1px solid var(--bd);
+      padding: 18px; margin-bottom: 2px;
+      border-left: 3px solid var(--bd-hi);
+    }
+    .prepw.pw4 { border-left-color: var(--ok); }
+    .prepw.pw3 { border-left-color: var(--info); }
+    .prepw.pw2 { border-left-color: var(--warn); }
+    .prepw.pw1 { border-left-color: var(--err); }
+
+    .pw-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .pw-num { font-family: var(--f-mono); font-size: 9px; color: var(--tx-2); letter-spacing: 0.12em; text-transform: uppercase; }
+    .pw-title { font-family: var(--f-body); font-weight: 600; font-size: 15px; color: var(--tx-0); }
+    .pw-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .pw-list li { font-size: 12px; color: var(--tx-1); padding-left: 18px; position: relative; line-height: 1.5; }
+    .pw-list li::before { content: '→'; position: absolute; left: 0; color: var(--violet); font-size: 11px; }
+
+    /* ══════ RULE CARDS ══════ */
+    .rule {
+      background: var(--bg-1); border: 1px solid var(--bd);
+      border-left: 2px solid var(--violet);
+      padding: 16px; margin-bottom: 6px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .rule-num { font-family: var(--f-display); font-size: 26px; color: var(--violet); line-height: 1; min-width: 28px; }
+    .rule-body { flex: 1; }
+    .rule-title { font-weight: 600; font-size: 14px; color: var(--tx-0); margin-bottom: 3px; }
+    .rule-desc { font-size: 12px; color: var(--tx-1); line-height: 1.55; }
+
+    /* ══════ ABGABEN ══════ */
+    .abgabe-card {
+      background: var(--bg-1); border: 1px solid var(--bd);
+      padding: 16px; margin-bottom: 6px;
+    }
+    .abg-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .abg-name { font-weight: 600; font-size: 14px; color: var(--tx-0); }
+    .abg-freq {
+      font-family: var(--f-mono); font-size: 8px; padding: 2px 8px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--violet); background: var(--violet-glow); border: 1px solid var(--violet-line);
+    }
+    .abg-tip { font-size: 12px; color: var(--tx-2); line-height: 1.55; }
+
+    /* ══════ ANIMATIONS ══════ */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .view.active > * { animation: fadeUp 0.5s ease both; }
+    .view.active > *:nth-child(2) { animation-delay: 0.06s; }
+    .view.active > *:nth-child(3) { animation-delay: 0.12s; }
+    .view.active > *:nth-child(4) { animation-delay: 0.18s; }
+    .view.active > *:nth-child(5) { animation-delay: 0.24s; }
+
+    /* ══════ SCROLLBAR ══════ */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-1); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-4); }
+
+    /* ══════ GLOW LINE ══════ */
+    .glow-line { height: 1px; background: linear-gradient(90deg, transparent, var(--violet), transparent); opacity: 0.35; border: none; margin: 28px 0; }
+
+    /* ══════ DARK MODE ══════ */
+    [data-theme="dark"] {
+      --bg-0: #0C0A14; --bg-1: #12101C; --bg-2: #1A1726; --bg-3: #221F30; --bg-4: #2C293C;
+      --tx-0: #F5F3FF; --tx-1: #C4C0E0; --tx-2: #8580A0; --tx-3: #504C6A;
+      --bd: rgba(255,255,255,0.07); --bd-hi: rgba(255,255,255,0.13);
+    }
+    [data-theme="dark"] .tab-strip { background: var(--bg-1); }
+    [data-theme="dark"] .tab-btn { color: var(--tx-2); }
+    [data-theme="dark"] .tab-btn.active { color: var(--violet-mid); border-bottom-color: var(--violet-mid); }
+    .theme-btn {
+      background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--tx-inv1);
+      cursor: pointer; padding: 5px 12px; font-family: var(--f-mono); font-size: 10px;
+      letter-spacing: 0.10em; text-transform: uppercase; transition: all 150ms ease; flex-shrink: 0;
+    }
+    .theme-btn:hover { border-color: var(--violet-mid); color: var(--violet-mid); }
+
+    /* ══════ PROGRESS TRACKER ══════ */
+    .prog-score {
+      background: var(--bg-dark); border: 1px solid var(--violet-line);
+      padding: 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 20px;
+    }
+    .prog-score-num {
+      font-family: var(--f-display); font-size: 56px; font-weight: 600;
+      background: linear-gradient(135deg, var(--violet-mid) 0%, var(--violet) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; min-width: 80px;
+    }
+    .prog-score-body { flex: 1; }
+    .prog-score-label { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tx-inv1); }
+    .prog-score-sub { font-size: 13px; color: var(--tx-inv1); margin-top: 3px; }
+    .prog-score-bar { width: 100%; height: 3px; background: var(--bg-dark3); margin-top: 10px; }
+    .prog-score-fill { height: 100%; background: linear-gradient(90deg, var(--violet-deep), var(--violet-mid)); transition: width 0.6s; }
+    .mod-card { background: var(--bg-1); border: 1px solid var(--bd); padding: 16px; margin-bottom: 8px; }
+    .mod-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; cursor: pointer; user-select: none; }
+    .mod-card-name { font-family: var(--f-display); font-size: 16px; font-weight: 500; color: var(--tx-0); }
+    .mod-pct { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.10em; }
+    .mod-bar-wrap { height: 2px; background: var(--bg-3); }
+    .mod-bar-fill { height: 100%; transition: width 0.4s ease; }
+    .mod-topics { display: none; margin-top: 12px; }
+    .mod-topics.open { display: block; }
+    .topic-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--bd); cursor: pointer; }
+    .topic-row:last-child { border-bottom: none; }
+    .topic-check { width: 16px; height: 16px; border: 1px solid var(--bd-hi); background: var(--bg-2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+    .topic-check.done { background: var(--violet); border-color: var(--violet); color: #fff; }
+    .topic-label { font-size: 13px; color: var(--tx-1); flex: 1; }
+    .topic-label.done { color: var(--tx-2); text-decoration: line-through; }
+    .mod-chevron { font-size: 14px; color: var(--tx-2); transition: transform 0.2s; }
+    .mod-chevron.open { transform: rotate(90deg); }
+
+    /* ══════ EINSTELLUNGEN / BACKUP ══════ */
+    .settings-block { background: var(--bg-1); border: 1px solid var(--bd); padding: 20px; margin-bottom: 8px; }
+    .settings-block-title {
+      font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--violet); margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
+    }
+    .settings-block-title::after { content:''; flex:1; height:1px; background: linear-gradient(90deg, var(--violet-line), transparent); }
+    .settings-desc { font-size: 13px; color: var(--tx-1); line-height: 1.65; margin-bottom: 14px; }
+    .s-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .s-input {
+      flex: 1; background: var(--bg-2); border: 1px solid var(--bd-hi); color: var(--tx-0);
+      font-family: var(--f-mono); font-size: 12px; padding: 10px 12px; outline: none;
+    }
+    .s-input:focus { border-color: var(--violet); }
+    .s-btn {
+      background: var(--bg-2); border: 1px solid var(--bd-hi); color: var(--tx-0);
+      font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em;
+      padding: 10px 16px; cursor: pointer; white-space: nowrap; transition: all 0.15s;
+    }
+    .s-btn:hover { border-color: var(--violet); color: var(--violet); }
+    .s-btn-full {
+      width: 100%; background: var(--bg-2); border: 1px solid var(--bd-hi); color: var(--tx-0);
+      font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; padding: 12px;
+      cursor: pointer; text-align: center; transition: all 0.15s; margin-bottom: 8px; display: block;
+    }
+    .s-btn-full:hover { border-color: var(--violet); color: var(--violet); }
+    .s-btn-full.accent { background: var(--violet-glow); border-color: var(--violet-line); color: var(--violet); }
+    .s-status { font-family: var(--f-mono); font-size: 10px; color: var(--tx-2); margin-top: 10px; line-height: 1.8; }
+    .backup-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.10em;
+      border: 1px solid var(--bd-hi); padding: 3px 10px; color: var(--tx-2);
+    }
+    .backup-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--tx-3); }
+    .backup-pill .dot.ok  { background: #16A34A; }
+    .backup-pill .dot.err { background: #DC2626; }
+    .backup-pill .dot.spin { background: var(--violet); animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    #gcal-links a { display:block; padding:8px 12px; margin-bottom:4px; background:var(--bg-2); color:var(--tx-0); text-decoration:none; font-family:var(--f-mono); font-size:11px; border:1px solid var(--bd); }
+    #gcal-links a:hover { border-color:var(--violet); color:var(--violet); }
+  </style>
+</head>
+<body>
+
+<!-- SVG DEFS — Synotix Logo System V3.0 Violet -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <linearGradient id="gMark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#A78BFA"/>
+      <stop offset="45%"  stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#4C1D95"/>
+    </linearGradient>
+    <symbol id="syn-mark" viewBox="0 0 80 86">
+      <polygon points="12,4 62,28 12,52 12,42 52,28 12,14" fill="url(#gMark)"/>
+      <polygon points="68,34 18,58 68,82 68,72 28,58 68,44" fill="url(#gMark)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ══════ TOPBAR ══════ -->
+<nav class="topbar">
+  <div class="topbar-brand">
+    <svg class="topbar-mark" viewBox="0 0 80 86"><use href="#syn-mark"/></svg>
+    <div class="topbar-sep"></div>
+    <span class="topbar-wordmark">Synotix</span>
+    <div class="topbar-sep"></div>
+    <div style="display:flex;flex-direction:column;gap:1px">
+      <span class="topbar-wordmark" style="font-size:13px;letter-spacing:0.10em;color:var(--tx-inv)">Lernplan</span>
+      <span class="topbar-subtitle">Melih · WiInf 4. Sem · SoSe 2026</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="backup-pill" id="backup-pill"><div class="dot" id="backup-dot"></div><span id="backup-text">—</span></div>
+    <button class="theme-btn" onclick="toggleTheme()">◑ Modus</button>
+  </div>
+</nav>
+
+<!-- ══════ TABS ══════ -->
+<div class="tab-strip">
+  <button class="tab-btn active" onclick="switchTab(0)">Überblick</button>
+  <button class="tab-btn" onclick="switchTab(1)">Wochenplan</button>
+  <button class="tab-btn" onclick="switchTab(2)">Methoden</button>
+  <button class="tab-btn" onclick="switchTab(3)">Module</button>
+  <button class="tab-btn" onclick="switchTab(4)">Klausurphase</button>
+  <button class="tab-btn" onclick="switchTab(5)">Goldene Regeln</button>
+  <button class="tab-btn" onclick="switchTab(6)">Fortschritt</button>
+  <button class="tab-btn" onclick="switchTab(7)">Einstellungen</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 0 — ÜBERBLICK
+═══════════════════════════════════════════════════════ -->
+<div class="view active" id="v0">
+
+  <span class="eyebrow">Dein Semester auf einen Blick</span>
+  <h2 class="section-title">Masterplan SoSe 2026</h2>
+  <p class="section-desc">7 Module, 2 Uni-Tage, 2 Arbeitstage, Startup am Wochenende, 4–5× Gym. Alles getaktet — kein Chaos.</p>
+
+  <div id="cd-box"></div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-val">7</div><div class="stat-lbl">Module</div></div>
+    <div class="stat-card"><div class="stat-val">2</div><div class="stat-lbl">Uni-Tage (Mo + Do)</div></div>
+    <div class="stat-card"><div class="stat-val">2</div><div class="stat-lbl">Arbeitstage (Di + Mi)</div></div>
+    <div class="stat-card"><div class="stat-val">4–5×</div><div class="stat-lbl">Gym / Woche</div></div>
+  </div>
+
+  <hr class="section-rule">
+
+  <span class="eyebrow">3-Phasen-Plan</span>
+
+  <div class="phase p1 current">
+    <div class="phase-top"><span class="phase-num">Phase 01</span><span class="phase-badge badge-current">← Du bist hier</span></div>
+    <div class="phase-name">Fundament bauen</div>
+    <div class="phase-dates">24. April – 31. Mai · 5 Wochen</div>
+    <ul class="phase-list">
+      <li>Vorlesungen aktiv nachbereiten — am selben oder nächsten Tag</li>
+      <li>Analysis & Datenbanken priorisieren — extra Lernzeit einplanen</li>
+      <li>Anki ab Tag 1: nach jeder Vorlesung 5–10 Karten erstellen</li>
+      <li>Abgaben als Klausurvorbereitung nutzen, nicht als Pflichtübung</li>
+      <li>Eigene Zusammenfassungen in eigenen Worten schreiben</li>
+    </ul>
+  </div>
+
+  <div class="phase p2">
+    <div class="phase-top"><span class="phase-num">Phase 02</span><span class="phase-badge badge-later">Juni</span></div>
+    <div class="phase-name">Vertiefen & Üben</div>
+    <div class="phase-dates">1. – 21. Juni · 3 Wochen</div>
+    <ul class="phase-list">
+      <li>Altklausuren systematisch durcharbeiten — rechnen, nicht nur lesen</li>
+      <li>Schwache Themen gezielt wiederholen mit Spaced Repetition</li>
+      <li>Übungsaufgaben nochmal lösen — ohne Musterlösung</li>
+      <li>Lerngruppe für Analysis und Datenbanken gründen</li>
+      <li>Startup auf 3–5h/Woche reduzieren</li>
+    </ul>
+  </div>
+
+  <div class="phase p3">
+    <div class="phase-top"><span class="phase-num">Phase 03</span><span class="phase-badge badge-later">Heiße Phase</span></div>
+    <div class="phase-name">Prüfungssimulation</div>
+    <div class="phase-dates">22. Juni – Klausuren · ~2 Wochen</div>
+    <ul class="phase-list">
+      <li>Nur noch Altklausuren unter Echtbedingungen</li>
+      <li>Blackout-Blatt: Alles aus dem Kopf aufschreiben</li>
+      <li>Kein neuer Stoff mehr — nur festigen</li>
+      <li>Lücken identifizieren → gezielt 30 Min nachlernen</li>
+      <li>Kein Startup, Arbeit wenn möglich reduzieren</li>
+    </ul>
+  </div>
+
+  <hr class="section-rule">
+
+  <span class="eyebrow">Abgaben-Überblick</span>
+
+  <div class="abgabe-card">
+    <div class="abg-top"><span class="abg-name">Datenbanken</span><span class="abg-freq">Jede Woche</span></div>
+    <div class="abg-tip">Direkt nach der Übung am Donnerstag erledigen. Nicht aufschieben — jede Abgabe ist gleichzeitig Klausurvorbereitung.</div>
+  </div>
+  <div class="abgabe-card">
+    <div class="abg-top"><span class="abg-name">Analysis</span><span class="abg-freq">Alle 2–3 Wochen</span></div>
+    <div class="abg-tip">Übungsblätter komplett durchrechnen, auch optionale Aufgaben. Jede gelöste Aufgabe = eine mögliche Klausuraufgabe weniger.</div>
+  </div>
+  <div class="abgabe-card">
+    <div class="abg-top"><span class="abg-name">Sonstige Module</span><span class="abg-freq">Verschieden</span></div>
+    <div class="abg-tip">Sofort nach Erhalt notieren. Innerhalb von 48h erledigen. Samstag = Puffer-Tag für offene Abgaben.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 1 — WOCHENPLAN
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="v1">
+  <span class="eyebrow">Dein Wochen-Rhythmus</span>
+  <h2 class="section-title">Wochenplan</h2>
+  <p class="section-desc">Mo + Do = Uni vor Ort. Di + Mi = Arbeit (8h). Fr–So = Lernen, Startup, Gym. Vorlesungen von Di/Mi/Fr als Aufzeichnung nachholen.</p>
+
+  <!-- MONTAG -->
+  <div class="day-row open" onclick="this.classList.toggle('open')">
+    <div class="day-header">
+      <span class="day-name">Montag</span>
+      <span class="day-type dtype-uni">Uni-Tag</span>
+      <span class="day-summary">KI + Datenanalyse</span>
+      <span class="day-chevron">›</span>
+    </div>
+    <div class="day-blocks">
+      <div class="tblock">
+        <span class="tb-time">07:30–08:45</span>
+        <div class="tb-info"><div class="tb-title">Pendeln zur Uni</div><div class="tb-sub">Anki-Karten im Zug durchgehen</div><span class="tb-tag t-pendeln">Pendeln</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">10:00–13:15</span>
+        <div class="tb-info"><div class="tb-title">Künstliche Intelligenz</div><div class="tb-sub">Prof. Hees · St-C118</div><span class="tb-tag t-uni">Vorlesung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">13:15–14:00</span>
+        <div class="tb-info"><div class="tb-title">Mittagspause</div><div class="tb-sub">Essen + kurze Notizen</div><span class="tb-tag t-pause">Pause</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">14:00–15:00</span>
+        <div class="tb-info"><div class="tb-title">KI Nachbereitung</div><div class="tb-sub">Zusammenfassung + Anki-Karten anlegen</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">15:15–18:30</span>
+        <div class="tb-info"><div class="tb-title">Datenanalyse & Visualisierung</div><div class="tb-sub">Prof. Hees · St-C018</div><span class="tb-tag t-uni">Vorlesung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">18:30–20:00</span>
+        <div class="tb-info"><div class="tb-title">Pendeln nach Hause</div><div class="tb-sub">Entspannen oder leichtes Audio-Review</div><span class="tb-tag t-pendeln">Pendeln</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">20:30–21:30</span>
+        <div class="tb-info"><div class="tb-title">🏋️ Gym (optional)</div><div class="tb-sub">Leichtes Training nach langem Uni-Tag</div><span class="tb-tag t-gym">Gym</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIENSTAG -->
+  <div class="day-row" onclick="this.classList.toggle('open')">
+    <div class="day-header">
+      <span class="day-name">Dienstag</span>
+      <span class="day-type dtype-arbeit">Arbeit</span>
+      <span class="day-summary">Vollzeit · Abends Gym</span>
+      <span class="day-chevron">›</span>
+    </div>
+    <div class="day-blocks">
+      <div class="tblock">
+        <span class="tb-time">08:00–17:00</span>
+        <div class="tb-info"><div class="tb-title">Werkstudent — Vollzeit</div><div class="tb-sub">8h Arbeitsblock (inkl. Pause)</div><span class="tb-tag t-arbeit">Arbeit</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">17:30–19:00</span>
+        <div class="tb-info"><div class="tb-title">🏋️ Gym</div><div class="tb-sub">Training nach der Arbeit</div><span class="tb-tag t-gym">Gym</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">20:00–20:15</span>
+        <div class="tb-info"><div class="tb-title">Anki Daily Review</div><div class="tb-sub">Nur fällige Karten — max 15 Min</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MITTWOCH -->
+  <div class="day-row" onclick="this.classList.toggle('open')">
+    <div class="day-header">
+      <span class="day-name">Mittwoch</span>
+      <span class="day-type dtype-arbeit">Arbeit</span>
+      <span class="day-summary">Vollzeit · Abends Gym</span>
+      <span class="day-chevron">›</span>
+    </div>
+    <div class="day-blocks">
+      <div class="tblock">
+        <span class="tb-time">08:00–17:00</span>
+        <div class="tb-info"><div class="tb-title">Werkstudent — Vollzeit</div><div class="tb-sub">8h Arbeitsblock (inkl. Pause)</div><span class="tb-tag t-arbeit">Arbeit</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">17:30–19:00</span>
+        <div class="tb-info"><div class="tb-title">🏋️ Gym</div><div class="tb-sub">Training nach der Arbeit</div><span class="tb-tag t-gym">Gym</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">20:00–20:15</span>
+        <div class="tb-info"><div class="tb-title">Anki Daily Review</div><div class="tb-sub">Nur fällige Karten — max 15 Min</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONNERSTAG -->
+  <div class="day-row" onclick="this.classList.toggle('open')">
+    <div class="day-header">
+      <span class="day-name">Donnerstag</span>
+      <span class="day-type dtype-uni">Uni-Tag</span>
+      <span class="day-summary">Planspiel + DB + Prog2</span>
+      <span class="day-chevron">›</span>
+    </div>
+    <div class="day-blocks">
+      <div class="tblock">
+        <span class="tb-time">06:45–08:00</span>
+        <div class="tb-info"><div class="tb-title">Pendeln zur Uni</div><div class="tb-sub">Anki: Datenbanken & Analysis Karten</div><span class="tb-tag t-pendeln">Pendeln</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">08:15–11:30</span>
+        <div class="tb-info"><div class="tb-title">Unternehmensplanspiel</div><div class="tb-sub">⚠ Anwesenheitspflicht! · St-C125/130</div><span class="tb-tag t-uni">Vorlesung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">12:00–13:30</span>
+        <div class="tb-info"><div class="tb-title">Datenbanken Übung</div><div class="tb-sub">Koensgen · St-C016 · Aktiv mitarbeiten</div><span class="tb-tag t-uni">Übung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">13:30–15:45</span>
+        <div class="tb-info"><div class="tb-title">Programmierung 2 Übung</div><div class="tb-sub">Balg · St-C175 · Code schreiben</div><span class="tb-tag t-uni">Übung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">16:00–17:00</span>
+        <div class="tb-info"><div class="tb-title">DB-Abgabe finalisieren</div><div class="tb-sub">Direkt nach der Übung erledigen!</div><span class="tb-tag t-abgabe">Abgabe</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">17:00–18:15</span>
+        <div class="tb-info"><div class="tb-title">Pendeln nach Hause</div><div class="tb-sub">Entspannen — langer Tag</div><span class="tb-tag t-pendeln">Pendeln</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREITAG -->
+  <div class="day-row" onclick="this.classList.toggle('open')">
+    <div class="day-header">
+      <span class="day-name">Freitag</span>
+      <span class="day-type dtype-lernen">Lerntag</span>
+      <span class="day-summary">Aufzeichnungen + Deep Work</span>
+      <span class="day-chevron">›</span>
+    </div>
+    <div class="day-blocks">
+      <div class="tblock">
+        <span class="tb-time">08:00–08:15</span>
+        <div class="tb-info"><div class="tb-title">Anki Daily Review</div><div class="tb-sub">Alle Fächer — max 15 Min</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">08:30–10:00</span>
+        <div class="tb-info"><div class="tb-title">📹 ADG Aufzeichnung (Di)</div><div class="tb-sub">Algorithmen & Datenstrukturen nachholen</div><span class="tb-tag t-uni">Aufzeichnung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">10:00–11:30</span>
+        <div class="tb-info"><div class="tb-title">📹 Datenbanken VL (Mi)</div><div class="tb-sub">Prof. Knolle — SQL & Theorie</div><span class="tb-tag t-uni">Aufzeichnung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">11:30–12:00</span>
+        <div class="tb-info"><div class="tb-title">Pause</div><div class="tb-sub">Kurze Erholung + Wasser</div><span class="tb-tag t-pause">Pause</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">12:00–14:00</span>
+        <div class="tb-info"><div class="tb-title">📹 Math-Algo Grundlagen DS (Mi)</div><div class="tb-sub">Prof. Becker — ca. 3h Aufzeichnung, 1.5× Speed</div><span class="tb-tag t-uni">Aufzeichnung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">14:00–15:30</span>
+        <div class="tb-info"><div class="tb-title">📹 Analysis VL + Übung (Mi/Di)</div><div class="tb-sub">Prof. Becker + Lanzerath nachholen</div><span class="tb-tag t-uni">Aufzeichnung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">16:00–17:30</span>
+        <div class="tb-info"><div class="tb-title">📹 Modellierung IS V+Ü (Fr)</div><div class="tb-sub">Prof. Hense + Stuhm</div><span class="tb-tag t-uni">Aufzeichnung</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">18:00–19:30</span>
+        <div class="tb-info"><div class="tb-title">🏋️ Gym</div><div class="tb-sub">Training nach dem Lerntag</div><span class="tb-tag t-gym">Gym</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAMSTAG -->
+  <div class="day-row" onclick="this.classList.toggle('open')">
+    <div class="day-header">
+      <span class="day-name">Samstag</span>
+      <span class="day-type dtype-lernen">Deep Work</span>
+      <span class="day-summary">Nachbereitung + Abgaben + Gym</span>
+      <span class="day-chevron">›</span>
+    </div>
+    <div class="day-blocks">
+      <div class="tblock">
+        <span class="tb-time">08:00–08:15</span>
+        <div class="tb-info"><div class="tb-title">Anki Daily Review</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">09:00–11:00</span>
+        <div class="tb-info"><div class="tb-title">🔥 Analysis Deep Work</div><div class="tb-sub">Aufgaben nachrechnen · Übungsblatt bearbeiten</div><span class="tb-tag t-lernen">Lernen</span><span class="tb-tag t-abgabe" style="margin-left:4px">Abgabe</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">11:00–12:30</span>
+        <div class="tb-info"><div class="tb-title">🔥 Datenbanken Nachbereitung</div><div class="tb-sub">SQL üben + Zusammenfassung + Anki</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">12:30–13:30</span>
+        <div class="tb-info"><div class="tb-title">Pause</div><span class="tb-tag t-pause">Pause</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">13:30–15:00</span>
+        <div class="tb-info"><div class="tb-title">ADG + Math-Algo Nachbereitung</div><div class="tb-sub">Algorithmen nachcoden · Formeln üben</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">15:00–16:00</span>
+        <div class="tb-info"><div class="tb-title">Puffer: Offene Abgaben</div><div class="tb-sub">Falls noch was offen ist</div><span class="tb-tag t-abgabe">Puffer</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">16:30–18:00</span>
+        <div class="tb-info"><div class="tb-title">🏋️ Gym</div><div class="tb-sub">Stärkstes Training am Wochenende</div><span class="tb-tag t-gym">Gym</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SONNTAG -->
+  <div class="day-row" onclick="this.classList.toggle('open')">
+    <div class="day-header">
+      <span class="day-name">Sonntag</span>
+      <span class="day-type dtype-flex">Startup + Review</span>
+      <span class="day-summary">Startup + Wochen-Review</span>
+      <span class="day-chevron">›</span>
+    </div>
+    <div class="day-blocks">
+      <div class="tblock">
+        <span class="tb-time">09:00–09:15</span>
+        <div class="tb-info"><div class="tb-title">Anki Daily Review</div><span class="tb-tag t-lernen">Lernen</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">10:00–14:00</span>
+        <div class="tb-info"><div class="tb-title">🚀 Startup-Block</div><div class="tb-sub">n8n Automatisierungen · KI-Agentur · Kunden</div><span class="tb-tag t-startup">Startup</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">14:00–15:00</span>
+        <div class="tb-info"><div class="tb-title">📋 Wochen-Review</div><div class="tb-sub">Was geschafft? Lücken? Nächste Woche planen</div><span class="tb-tag t-lernen">Review</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">15:30–17:00</span>
+        <div class="tb-info"><div class="tb-title">🏋️ Gym (optional)</div><div class="tb-sub">Leichte Session oder Cardio</div><span class="tb-tag t-gym">Gym</span></div>
+      </div>
+      <div class="tblock">
+        <span class="tb-time">17:00+</span>
+        <div class="tb-info"><div class="tb-title">Frei</div><div class="tb-sub">Erholung — dein Gehirn braucht das</div><span class="tb-tag t-pause">Frei</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="glow-line">
+
+  <span class="eyebrow">Gym-Verteilung</span>
+  <p class="section-desc" style="margin-bottom:8px">5 mögliche Slots pro Woche — wähle 4–5 davon je nach Energie:</p>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-val" style="font-size:16px; color:var(--warn)">Mo</div><div class="stat-lbl">20:30 nach Uni</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:16px; color:var(--warn)">Di</div><div class="stat-lbl">17:30 nach Arbeit</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:16px; color:var(--warn)">Mi</div><div class="stat-lbl">17:30 nach Arbeit</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:16px; color:var(--warn)">Fr</div><div class="stat-lbl">18:00 nach Lernen</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:16px; color:var(--warn)">Sa</div><div class="stat-lbl">16:30 Hauptsession</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:16px; color:var(--warn)">So</div><div class="stat-lbl">15:30 leicht/Cardio</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 2 — METHODEN
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="v2">
+  <span class="eyebrow">Bewiesene Techniken</span>
+  <h2 class="section-title">Lernmethoden</h2>
+  <p class="section-desc">Diese Methoden sparen dir Zeit, weil du weniger wiederholen musst — dafür bleibt mehr hängen. Alle sind wissenschaftlich belegt.</p>
+
+  <div class="mcard" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">🧠</span><div class="mcard-titles"><div class="mcard-title">Feynman-Methode</div><div class="mcard-sub">#1 für echtes Verständnis</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Thema wählen (z.B. „SQL Joins" oder „Grenzwerte")</li>
+        <li><span class="mstep-n">02</span>Laut erklären — als wäre dein Gegenüber 10 Jahre alt</li>
+        <li><span class="mstep-n">03</span>Wo du stockst = da ist deine Lücke → zurück zum Material</li>
+        <li><span class="mstep-n">04</span>Vereinfachen, bis du keine Fachbegriffe ohne Erklärung nutzt</li>
+      </ul>
+      <div class="mtip"><strong>Tipp:</strong> Nimm dich mit dem Handy auf. 2 Tage später anhören — du merkst sofort, was wirklich sitzt und was nur auswendig war.</div>
+    </div>
+  </div>
+
+  <div class="mcard mc-green" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">🔁</span><div class="mcard-titles"><div class="mcard-title">Active Recall</div><div class="mcard-sub">Buch zu, aus dem Kopf abrufen</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Lies einen Abschnitt oder besuche die Vorlesung</li>
+        <li><span class="mstep-n">02</span>Alles schließen. Aufschreiben was du weißt</li>
+        <li><span class="mstep-n">03</span>Vergleichen — Lücken markieren</li>
+        <li><span class="mstep-n">04</span>Nur die Lücken am nächsten Tag wiederholen</li>
+      </ul>
+      <div class="mtip"><strong>Für Analysis:</strong> Aufgaben ohne Formelsammlung rechnen. Das Suchen im Kopf trainiert viel stärker als passives Lesen.</div>
+    </div>
+  </div>
+
+  <div class="mcard mc-blue" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">📊</span><div class="mcard-titles"><div class="mcard-title">Spaced Repetition (Anki)</div><div class="mcard-sub">15 Min täglich · keine Ausnahmen</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Anki installieren (kostenlos auf PC, kostenpflichtig iOS)</li>
+        <li><span class="mstep-n">02</span>Nach jeder Vorlesung: 5–10 Karten erstellen</li>
+        <li><span class="mstep-n">03</span>Jeden Tag fällige Karten durchgehen — auch Arbeitstage</li>
+        <li><span class="mstep-n">04</span>Der Algorithmus zeigt dir automatisch, was du vergisst</li>
+      </ul>
+      <div class="mtip"><strong>Karten-Typen:</strong> Definitionen, Prozesse (1NF→3NF), Formeln, SQL-Snippets, Algorithmen-Laufzeiten. Immer selbst formulieren — nie Copy-Paste!</div>
+    </div>
+  </div>
+
+  <div class="mcard mc-err" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">🍅</span><div class="mcard-titles"><div class="mcard-title">Pomodoro-Technik</div><div class="mcard-sub">25 Min Fokus · 5 Min Pause</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Timer auf 25 Minuten stellen</li>
+        <li><span class="mstep-n">02</span>Nur EINE Aufgabe — kein Wechseln</li>
+        <li><span class="mstep-n">03</span>5 Min Pause — aufstehen, Wasser</li>
+        <li><span class="mstep-n">04</span>Nach 4 Runden: 20–30 Min lange Pause</li>
+      </ul>
+      <div class="mtip"><strong>Hack:</strong> Handy komplett weg. Nicht lautlos — in einen anderen Raum. Die ersten 5 Min sind immer die schwersten, danach kommt der Flow.</div>
+    </div>
+  </div>
+
+  <div class="mcard" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">📝</span><div class="mcard-titles"><div class="mcard-title">Blackout-Blatt</div><div class="mcard-sub">Alles aus dem Kopf · ideal vor Klausuren</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Leeres Blatt nehmen</li>
+        <li><span class="mstep-n">02</span>Alles aufschreiben was du zum Thema weißt — ohne nachschauen</li>
+        <li><span class="mstep-n">03</span>Vergleichen → Lücken markieren</li>
+        <li><span class="mstep-n">04</span>Lücken sofort nachlernen, nächster Tag: nochmal</li>
+      </ul>
+      <div class="mtip"><strong>Klausur-Waffe:</strong> 3 Tage vor der Prüfung für jedes Modul machen. Jede Wiederholung wird dichter. Am Prüfungstag schreibst du die erste Seite in 2 Minuten.</div>
+    </div>
+  </div>
+
+  <div class="mcard mc-warn" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">🔀</span><div class="mcard-titles"><div class="mcard-title">Interleaving (Mischen)</div><div class="mcard-sub">Verschiedene Themen abwechseln</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Nicht 3h nur Analysis — Fächer mischen</li>
+        <li><span class="mstep-n">02</span>1 Pomodoro Analysis → 1 Pomodoro DB → 1 Pomodoro ADG</li>
+        <li><span class="mstep-n">03</span>Fühlt sich schwerer an, ist aber nachweislich effektiver</li>
+        <li><span class="mstep-n">04</span>Dein Gehirn lernt, zwischen Kontexten zu wechseln (wie in der Klausur)</li>
+      </ul>
+      <div class="mtip"><strong>Ausnahme:</strong> Neues Thema erstmals lernen → 45–60 Min dranbleiben. Mischen funktioniert am besten beim Wiederholen.</div>
+    </div>
+  </div>
+
+  <div class="mcard mc-green" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">🔗</span><div class="mcard-titles"><div class="mcard-title">Elaboration (Verknüpfen)</div><div class="mcard-sub">Neues mit Bekanntem verbinden</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Bei jedem Konzept fragen: „Wie hängt das mit X zusammen?"</li>
+        <li><span class="mstep-n">02</span>SQL Joins → Vergleich mit Excel SVERWEIS</li>
+        <li><span class="mstep-n">03</span>Graphen in ADG → Netzwerke in KI</li>
+        <li><span class="mstep-n">04</span>Je mehr Verbindungen, desto stabiler das Wissen</li>
+      </ul>
+      <div class="mtip"><strong>Startup-Bonus:</strong> Verbinde Uni-Stoff mit deiner KI-Agentur. DB → Kundendaten. KI → Automatisierungen. Das motiviert UND vertieft gleichzeitig.</div>
+    </div>
+  </div>
+
+  <div class="mcard mc-warn" onclick="this.classList.toggle('open')">
+    <div class="mcard-head"><span class="mcard-icon">🚆</span><div class="mcard-titles"><div class="mcard-title">Pendel-Hack (2h geschenkte Zeit)</div><div class="mcard-sub">Hin- und Rückweg produktiv nutzen</div></div><span class="mcard-chev">›</span></div>
+    <div class="mcard-body">
+      <ul class="msteps">
+        <li><span class="mstep-n">01</span>Hinweg: Anki-Karten (10–15 Min reichen)</li>
+        <li><span class="mstep-n">02</span>Danach: Vorlesungs-Audio oder Podcast hören</li>
+        <li><span class="mstep-n">03</span>Rückweg: Im Kopf zusammenfassen, was du heute gelernt hast</li>
+        <li><span class="mstep-n">04</span>Oder: 3 Dinge notieren, die du heute gelernt hast</li>
+      </ul>
+      <div class="mtip"><strong>Rechnung:</strong> 2 Uni-Tage × 2h = 4h/Woche. Über das Semester: 50+ Stunden die du sonst verlierst. Nutze jede Minute.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 3 — MODULE
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="v3">
+  <span class="eyebrow">Fach für Fach</span>
+  <h2 class="section-title">Modulstrategien</h2>
+  <p class="section-desc">Jedes Fach braucht einen anderen Ansatz. Hier die Strategie für deine 7 Module — sortiert nach Schwierigkeit.</p>
+
+  <div class="modcard mod-err">
+    <div class="mod-top"><span class="mod-name">Analysis</span><span class="mod-badge mbadge-hard">Sorgenfach</span></div>
+    <div class="mod-meta">VL Mi 13:30 · Ü Di 13:30 · Abgabe alle 2–3 Wo · Aufzeichnung Fr</div>
+    <div class="mod-strat">Mathe lernst du nur durch Rechnen — nicht durch Lesen. Jede selbst gerechnete Aufgabe ist 10× mehr wert als eine angeschaute Musterlösung.</div>
+    <ul class="mod-acts">
+      <li>Samstag-Morgen: 2h Deep Work nur für Analysis-Aufgaben</li>
+      <li>Formelsammlung SELBST schreiben — das Schreiben ist das Lernen</li>
+      <li>Abgaben komplett selbst rechnen, auch optionale Aufgaben</li>
+      <li>YouTube: 3Blue1Brown für visuelles Verständnis</li>
+      <li>Anki: Formeln + Beweisschritte + typische Aufgabentypen</li>
+      <li>Lerngruppe: Mind. 1× pro Woche zusammen rechnen</li>
+    </ul>
+  </div>
+
+  <div class="modcard mod-err">
+    <div class="mod-top"><span class="mod-name">Datenbanken</span><span class="mod-badge mbadge-hard">Sorgenfach</span></div>
+    <div class="mod-meta">VL Mi 08:15 · Ü Do 12:00 · Abgabe jede Woche · Aufzeichnung Fr</div>
+    <div class="mod-strat">SQL musst du SCHREIBEN können, nicht nur verstehen. Theorie (Normalisierung, ER-Modelle) lernst du am besten durch eigene Beispiele.</div>
+    <ul class="mod-acts">
+      <li>DB-Abgabe direkt am Donnerstag nach der Übung erledigen</li>
+      <li>Eigene Datenbank für dein Startup anlegen und damit SQL üben</li>
+      <li>Normalisierung: Eigene Beispiele durchnormalisieren (1NF→BCNF)</li>
+      <li>Anki: SQL-Syntax, Normalformen-Regeln, ER-Notationen</li>
+      <li>Feynman-Methode: „Was ist ein Foreign Key?" ohne nachschauen erklären</li>
+    </ul>
+  </div>
+
+  <div class="modcard mod-info">
+    <div class="mod-top"><span class="mod-name">Algorithmen, Datenstrukturen & Graphen</span><span class="mod-badge mbadge-mid">Mittel</span></div>
+    <div class="mod-meta">Di 08:15 · Thiele · Aufzeichnung Fr</div>
+    <div class="mod-strat">Algorithmen versteht man nur durch Implementieren. Pseudocode lesen reicht nicht — Code schreiben, debuggen, Laufzeit analysieren.</div>
+    <ul class="mod-acts">
+      <li>Jeden Algorithmus einmal in Python/Java nachprogrammieren</li>
+      <li>O-Notation für jeden Algorithmus aufschreiben</li>
+      <li>Graphen per Hand zeichnen und visualisieren</li>
+      <li>Anki: Algorithmus → Laufzeit → Anwendungsfall</li>
+    </ul>
+  </div>
+
+  <div class="modcard mod-warn">
+    <div class="mod-top"><span class="mod-name">Math. Algorithmen für Data Science</span><span class="mod-badge mbadge-mid">Mittel</span></div>
+    <div class="mod-meta">Mi 10:00–13:15 · Prof. Becker · Aufzeichnung Fr</div>
+    <div class="mod-strat">Überschneidung mit Analysis und KI — Synergien nutzen. Verstehe die Mathematik hinter ML-Algorithmen.</div>
+    <ul class="mod-acts">
+      <li>Formeln nicht nur merken — verstehen was jeder Term bedeutet</li>
+      <li>Verbinde mit KI-Vorlesung: Welche Algorithmen wo?</li>
+      <li>Python-Notebooks: Algorithmen implementieren und visualisieren</li>
+      <li>Anki: Formeln + Erklärung in eigenen Worten</li>
+    </ul>
+  </div>
+
+  <div class="modcard">
+    <div class="mod-top"><span class="mod-name">Künstliche Intelligenz</span><span class="mod-badge mbadge-ok">Stärke</span></div>
+    <div class="mod-meta">Mo 10:00–13:15 · Prof. Hees · Vor Ort</div>
+    <div class="mod-strat">Dein Interessensfach + direkt Startup-relevant. Nutze die Motivation — aber vertiefe auch die theoretischen Grundlagen.</div>
+    <ul class="mod-acts">
+      <li>Nachbereitung: Konzepte direkt auf Startup anwenden</li>
+      <li>Projekte mit Extra-Aufwand — lohnt sich besonders hier</li>
+      <li>Verbinde mit Math-Algo DS — die Fächer überlappen</li>
+      <li>Anki: Fachbegriffe + Algorithmen-Schritte</li>
+    </ul>
+  </div>
+
+  <div class="modcard mod-ok">
+    <div class="mod-top"><span class="mod-name">Datenanalyse & Visualisierung</span><span class="mod-badge mbadge-ok">Machbar</span></div>
+    <div class="mod-meta">Mo 15:15–18:30 · Prof. Hees · Vor Ort</div>
+    <div class="mod-strat">Praxisfach — lerne durch Machen. Eigene Mini-Projekte mit echten Daten erstellen.</div>
+    <ul class="mod-acts">
+      <li>Jedes Tool aus der VL selbst ausprobieren</li>
+      <li>Datensätze für dein Startup nutzen</li>
+      <li>Schritte dokumentieren = Lernmaterial</li>
+    </ul>
+  </div>
+
+  <div class="modcard mod-ok">
+    <div class="mod-top"><span class="mod-name">Modellierung betr. IS</span><span class="mod-badge mbadge-ok">Machbar</span></div>
+    <div class="mod-meta">Fr 10:00–13:15 · Hense + Stuhm · Aufzeichnung Fr</div>
+    <div class="mod-strat">UML, BPMN, Prozessmodellierung — viel Übung, wenig Theorie. Diagramme selbst zeichnen!</div>
+    <ul class="mod-acts">
+      <li>Jede Übung sofort nachzeichnen (per Hand oder Tool)</li>
+      <li>Prozesse für dein Startup modellieren</li>
+      <li>Anki: Diagramm-Typ → Wann → Notation</li>
+    </ul>
+  </div>
+
+  <div class="modcard mod-ok">
+    <div class="mod-top"><span class="mod-name">Programmierung 2</span><span class="mod-badge mbadge-ok">Stärke</span></div>
+    <div class="mod-meta">Do 13:30–15:45 · Balg · Vor Ort</div>
+    <div class="mod-strat">Dein Interessensgebiet. Code aus der Übung nochmal selbst schreiben, nicht kopieren.</div>
+    <ul class="mod-acts">
+      <li>OOP-Konzepte auf Startup-Projekte anwenden</li>
+      <li>Wenig Extra-Lernzeit nötig — Übung reicht</li>
+    </ul>
+  </div>
+
+  <div class="modcard" style="border-left-color: var(--warn);">
+    <div class="mod-top"><span class="mod-name">Unternehmensplanspiel</span><span class="mod-badge mbadge-ok">Anwesenheit</span></div>
+    <div class="mod-meta">Do 08:15–11:30 · Anwesenheitspflicht! · Vor Ort</div>
+    <div class="mod-strat">Anwesenheit ist Pflicht — aktiv mitarbeiten, Entscheidungen dokumentieren. BWL-Konzepte direkt aufs Startup anwendbar.</div>
+    <ul class="mod-acts">
+      <li>Entscheidungen notieren für Nachbereitung</li>
+      <li>Kein Extra-Aufwand nötig — Lernen durch Mitmachen</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 4 — KLAUSURVORBEREITUNG
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="v4">
+  <span class="eyebrow">Die letzten Wochen vor den Prüfungen</span>
+  <h2 class="section-title">Klausurvorbereitung</h2>
+  <p class="section-desc">Ab 4 Wochen vor der ersten Klausur schaltest du in den Prüfungsmodus. Hier ist dein System:</p>
+
+  <div class="prepw pw4">
+    <div class="pw-top"><span class="pw-num">Woche -4</span><span class="pw-title">Überblick verschaffen</span></div>
+    <ul class="pw-list">
+      <li>Alle Themen pro Fach auf einer Seite auflisten</li>
+      <li>Für jedes Thema bewerten: ✅ Verstanden / ⚠️ Unsicher / ❌ Keine Ahnung</li>
+      <li>Altklausuren beschaffen (Fachschaft, Kommilitonen, Profs fragen)</li>
+      <li>Lerngruppen für Analysis & Datenbanken organisieren</li>
+      <li>Startup auf 3h/Woche reduzieren</li>
+    </ul>
+  </div>
+
+  <div class="prepw pw3">
+    <div class="pw-top"><span class="pw-num">Woche -3</span><span class="pw-title">Lücken schließen</span></div>
+    <ul class="pw-list">
+      <li>⚠️ und ❌ Themen gezielt nacharbeiten</li>
+      <li>Erste Altklausur pro Fach unter echten Bedingungen schreiben</li>
+      <li>Ergebnis analysieren: Wo gehen Punkte verloren?</li>
+      <li>Zusammenfassungen finalisieren (max. 2 Seiten pro Fach)</li>
+    </ul>
+  </div>
+
+  <div class="prepw pw2">
+    <div class="pw-top"><span class="pw-num">Woche -2</span><span class="pw-title">Altklausuren-Marathon</span></div>
+    <ul class="pw-list">
+      <li>Jeden Tag mindestens 1 Altklausur komplett durchrechnen</li>
+      <li>Timer stellen — echte Klausurbedingungen simulieren</li>
+      <li>Fehler-Liste führen: Welche Aufgabentypen fallen schwer?</li>
+      <li>Schwache Typen gezielt üben (30 Min pro Lücke)</li>
+    </ul>
+  </div>
+
+  <div class="prepw pw1">
+    <div class="pw-top"><span class="pw-num">Woche -1</span><span class="pw-title">Feinschliff & Vertrauen</span></div>
+    <ul class="pw-list">
+      <li>Blackout-Blatt für jedes Fach: Alles aus dem Kopf</li>
+      <li>Letzte Altklausur als Generalprobe — Ziel: 80%+</li>
+      <li>Keine neuen Themen — nur festigen</li>
+      <li>Tag vor Klausur: Nur 30 Min Review, dann entspannen</li>
+      <li>Schlaf > Last-Minute-Lernen. 7–8 Stunden sind Pflicht</li>
+      <li>Kein Startup, minimale Arbeit</li>
+    </ul>
+  </div>
+
+  <hr class="glow-line">
+
+  <span class="eyebrow">Am Klausurtag</span>
+
+  <div class="rule">
+    <span class="rule-num">1</span>
+    <div class="rule-body"><div class="rule-title">Frühstück + Wasser</div><div class="rule-desc">Haferflocken, Banane, 500ml Wasser. Kein Energydrink.</div></div>
+  </div>
+  <div class="rule">
+    <span class="rule-num">2</span>
+    <div class="rule-body"><div class="rule-title">30 Min vorher da sein</div><div class="rule-desc">Stressfrei ankommen. Platz suchen. Tief durchatmen.</div></div>
+  </div>
+  <div class="rule">
+    <span class="rule-num">3</span>
+    <div class="rule-body"><div class="rule-title">Erst komplett durchlesen</div><div class="rule-desc">Alle Aufgaben überfliegen. Punkte notieren. Leichte zuerst.</div></div>
+  </div>
+  <div class="rule">
+    <span class="rule-num">4</span>
+    <div class="rule-body"><div class="rule-title">Zeitmanagement</div><div class="rule-desc">Punkte ÷ Gesamtzeit = Min/Punkt. Bei 90 Min + 60 Punkte = 1.5 Min/Punkt. Nicht festbeißen.</div></div>
+  </div>
+  <div class="rule">
+    <span class="rule-num">5</span>
+    <div class="rule-body"><div class="rule-title">Immer etwas hinschreiben</div><div class="rule-desc">Ansatz, Formel, Gedankengang — Teilpunkte sind Punkte.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 5 — GOLDENE REGELN
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="v5">
+  <span class="eyebrow">Die wichtigsten Prinzipien</span>
+  <h2 class="section-title">10 Goldene Regeln</h2>
+  <p class="section-desc">Wenn du nur eine Sache aus diesem Plan mitnimmst — nimm diese Regeln.</p>
+
+  <div class="rule"><span class="rule-num">1</span><div class="rule-body"><div class="rule-title">Gleicher Tag = Doppelter Effekt</div><div class="rule-desc">Was du am selben Tag nachbereitest, bleibt 2× so gut hängen wie am nächsten. Freitag ist dein Aufzeichnungs- und Nachbereitungstag.</div></div></div>
+
+  <div class="rule"><span class="rule-num">2</span><div class="rule-body"><div class="rule-title">Abgaben = Geschenkte Klausurvorbereitung</div><div class="rule-desc">Die wöchentliche DB-Abgabe IST deine Vorbereitung. Selbst rechnen, nicht abschreiben — dann bist du zur Klausur 70% ready.</div></div></div>
+
+  <div class="rule"><span class="rule-num">3</span><div class="rule-body"><div class="rule-title">Aktiv > Passiv — Immer</div><div class="rule-desc">Folien lesen = 10%. Selbst schreiben = 30%. Erklären = 70%. Anwenden = 90%. Wähle immer die aktivste Methode.</div></div></div>
+
+  <div class="rule"><span class="rule-num">4</span><div class="rule-body"><div class="rule-title">Anki: 15 Min täglich, keine Ausnahmen</div><div class="rule-desc">Auch an Arbeitstagen. Im Zug, vor dem Schlafen — egal wann, aber jeden Tag. Die Kraft liegt in der Regelmäßigkeit.</div></div></div>
+
+  <div class="rule"><span class="rule-num">5</span><div class="rule-body"><div class="rule-title">Analysis: Rechnen, rechnen, rechnen</div><div class="rule-desc">Du kannst Mathe nicht durch Lesen lernen. Der Schmerz beim Rechnen ist das Signal, dass du lernst.</div></div></div>
+
+  <div class="rule"><span class="rule-num">6</span><div class="rule-body"><div class="rule-title">Pendeln = 4h/Woche Bonus</div><div class="rule-desc">2 Uni-Tage × 2h Pendeln. Anki, Podcasts, Audio-Zusammenfassungen. 50+ Stunden im Semester die du sonst verlierst.</div></div></div>
+
+  <div class="rule"><span class="rule-num">7</span><div class="rule-body"><div class="rule-title">Freitag = Aufzeichnungstag</div><div class="rule-desc">Alle Vorlesungen von Di+Mi+Fr nachholen. Samstag = Nachbereitung. Diese Struktur verhindert, dass du hinterherhinkst.</div></div></div>
+
+  <div class="rule"><span class="rule-num">8</span><div class="rule-body"><div class="rule-title">Gym ist nicht optional</div><div class="rule-desc">Training verbessert Konzentration, Schlaf und Stimmung. 4–5× Gym ist eine Investition ins Lernen, nicht Zeitverschwendung.</div></div></div>
+
+  <div class="rule"><span class="rule-num">9</span><div class="rule-body"><div class="rule-title">Sonntag-Review: 60 Min</div><div class="rule-desc">Was geschafft? Was fehlt? Nächste Woche planen. Dieser eine Check verhindert, dass du den Überblick verlierst.</div></div></div>
+
+  <div class="rule"><span class="rule-num">10</span><div class="rule-body"><div class="rule-title">Starte jetzt — nicht morgen</div><div class="rule-desc">Öffne Anki, erstelle dein erstes Deck, mach 5 Karten. In 10 Wochen wirst du froh sein, dass du heute angefangen hast.</div></div></div>
+
+  <hr class="glow-line">
+
+  <span class="eyebrow">Zeitbudget pro Woche</span>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-val" style="font-size:20px; color:var(--violet)">~18h</div><div class="stat-lbl">Uni (VL + Aufzeichnungen)</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:20px; color:var(--info)">~16h</div><div class="stat-lbl">Arbeit (Di + Mi)</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:20px; color:var(--ok)">~10h</div><div class="stat-lbl">Nachbereitung + Üben</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:20px; color:var(--warn)">~6h</div><div class="stat-lbl">Gym (4–5 Sessions)</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:20px; color:var(--violet-mid)">~4h</div><div class="stat-lbl">Startup (Sonntag)</div></div>
+    <div class="stat-card"><div class="stat-val" style="font-size:20px; color:var(--tx-2)">~4h</div><div class="stat-lbl">Pendeln (Mo + Do)</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 6 — FORTSCHRITT
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="v6">
+  <span class="eyebrow">Klausurvorbereitung</span>
+  <h2 class="section-title">Lernfortschritt</h2>
+  <p class="section-desc">Hake ab was du beherrschst. Der Score zeigt wie klausurklar du bist — gespeichert im Browser.</p>
+  <div id="prog-score-box"></div>
+  <div id="prog-modules"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 7 — EINSTELLUNGEN & BACKUP
+═══════════════════════════════════════════════════════ -->
+<div class="view" id="v7">
+  <span class="eyebrow">Datensicherung</span>
+  <h2 class="section-title">Einstellungen & Backup</h2>
+  <p class="section-desc">Sichere deinen Lernfortschritt in der Cloud und verbinde externe Kalender.</p>
+
+  <!-- GitHub Gist -->
+  <div class="settings-block">
+    <div class="settings-block-title">☁ GitHub Gist Backup</div>
+    <div class="settings-desc">Dein Fortschritt wird automatisch als privates GitHub Gist gesichert — bleibt erhalten auch wenn du den Browser-Cache leerst.<br><br>Token erstellen: github.com → Settings → Developer settings → Personal access tokens → Scope: <strong>gist</strong></div>
+    <div class="s-row">
+      <input class="s-input" id="gist-token-input" type="password" placeholder="ghp_xxxxxxxxxxxx (Token einfügen)">
+      <button class="s-btn" onclick="saveGistToken()">Speichern</button>
+    </div>
+    <button class="s-btn-full accent" onclick="manualBackup()">☁ Jetzt in Cloud sichern</button>
+    <button class="s-btn-full" onclick="restoreFromGist()">↓ Aus Cloud-Backup wiederherstellen</button>
+    <div class="s-status" id="gist-status">Noch kein Token gespeichert.</div>
+  </div>
+
+  <!-- ICS Export -->
+  <div class="settings-block">
+    <div class="settings-block-title">📅 Kalender-Export</div>
+    <div class="settings-desc">Exportiere deinen Stundenplan als .ics Datei — direkt importierbar in Apple Kalender, Google Calendar und Outlook. Klausuren bekommen automatisch eine Erinnerung 24h vorher.</div>
+    <button class="s-btn-full accent" onclick="exportAsICS()">📅 Als .ics exportieren (Apple / Outlook)</button>
+    <button class="s-btn-full" onclick="generateGCalLinks()">🗓 Google Calendar Links anzeigen</button>
+    <div id="gcal-links" style="display:none;margin-top:8px"></div>
+  </div>
+
+  <!-- JSON -->
+  <div class="settings-block">
+    <div class="settings-block-title">📦 JSON Export / Import</div>
+    <div class="settings-desc">Lade alle Daten als JSON-Datei herunter oder importiere ein vorhandenes Backup.</div>
+    <button class="s-btn-full accent" onclick="exportJSON()">↓ JSON-Backup herunterladen</button>
+    <button class="s-btn-full" onclick="document.getElementById('import-file').click()">↑ JSON-Backup importieren</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
+    <div class="s-status" id="import-status"></div>
+  </div>
+</div>
+
+<!-- ══════ SCRIPT ══════ -->
+<script>
+// ── Tab switching ──────────────────────────────────────
+function switchTab(i) {
+  document.querySelectorAll('.tab-btn').forEach((t,j) => t.classList.toggle('active', j===i));
+  document.querySelectorAll('.view').forEach((v,j) => v.classList.toggle('active', j===i));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (i === 6) renderProgress();
+  if (i === 7) refreshSettingsStatus();
+}
+
+// ── Theme ──────────────────────────────────────────────
+function toggleTheme() {
+  const cur  = document.documentElement.dataset.theme || 'light';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem('syn-theme-desktop', next);
+}
+(function() {
+  const t = localStorage.getItem('syn-theme-desktop');
+  if (t) document.documentElement.dataset.theme = t;
+})();
+
+// ── Countdown ─────────────────────────────────────────
+(function() {
+  const el = document.getElementById('cd-box');
+  const exam = new Date('2026-07-06');
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = Math.max(0, Math.ceil((exam - now) / 86400000));
+  const semStart = new Date('2026-04-01');
+  const total = Math.ceil((exam - semStart) / 86400000);
+  const elapsed = Math.ceil((now - semStart) / 86400000);
+  const pct = Math.min(100, Math.max(0, (elapsed / total) * 100));
+  el.innerHTML = `
+    <div class="countdown">
+      <div class="cd-num">${diff}</div>
+      <div class="cd-body">
+        <div class="cd-label">Tage bis Prüfungsphase</div>
+        <div class="cd-sub">Anfang Juli 2026 · Jeder Tag zählt</div>
+        <div class="cd-bar"><div class="cd-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+})();
+
+// ── Lernfortschritt ────────────────────────────────────
+const MODULES = [
+  { id:'ki',   name:'Künstliche Intelligenz',  color:'#7C3AED', themen:['KNN Grundlagen','Backpropagation','CNN / Faltungsnetze','Reinforcement Learning','NLP & Transformers','Evaluationsmetriken'] },
+  { id:'dav',  name:'Datenanalyse & Vis.',      color:'#2563EB', themen:['Deskriptive Statistik','Pandas / NumPy','Matplotlib / Seaborn','Korrelationsanalyse','Dimensionsreduktion (PCA)','Dashboard-Projekt'] },
+  { id:'adg',  name:'ADG',                      color:'#16A34A', themen:['Sortieralgorithmen','Suchalgorithmen','Graphen & Bäume','Dynamische Programmierung','Hashing','Komplexitätstheorie'] },
+  { id:'ana',  name:'Analysis',                 color:'#DC2626', themen:['Grenzwerte & Stetigkeit','Differentiation','Partielle Ableitungen','Integration','Mehrfachintegrale','Taylorreihe'] },
+  { id:'db',   name:'Datenbanken',              color:'#D97706', themen:['ER-Modellierung','Relationale Algebra','SQL Grundlagen','JOINs & Subqueries','Normalisierung','Transaktionen & ACID'] },
+  { id:'prog', name:'Programmierung 2',         color:'#9F67F5', themen:['OOP Konzepte','Vererbung & Polymorphismus','Interfaces','Collections & Generics','Exceptions','Design Patterns'] },
+  { id:'mis',  name:'Modellierung IS',          color:'#059669', themen:['UML Klassendiagramme','Use-Case-Diagramme','Sequenzdiagramme','Aktivitätsdiagramme','BPMN Grundlagen','Fallstudien'] },
+];
+
+function loadFortschritt() {
+  try { return JSON.parse(localStorage.getItem('syn-fortschritt') || '{}'); } catch { return {}; }
+}
+function saveFortschritt(data) { localStorage.setItem('syn-fortschritt', JSON.stringify(data)); scheduleAutoBackup(); }
+
+function toggleTopic(modId, idx) {
+  const d = loadFortschritt();
+  if (!d[modId]) d[modId] = {};
+  d[modId][idx] = !d[modId][idx];
+  saveFortschritt(d);
+  renderProgress();
+}
+function toggleModCard(modId) {
+  document.getElementById('topics-'+modId).classList.toggle('open');
+  document.getElementById('chev-'+modId).classList.toggle('open');
+}
+function renderProgress() {
+  const data = loadFortschritt();
+  let total = 0, done = 0;
+  MODULES.forEach(m => { total += m.themen.length; m.themen.forEach((_,i) => { if (data[m.id]?.[i]) done++; }); });
+  const score = total > 0 ? Math.round((done/total)*100) : 0;
+  document.getElementById('prog-score-box').innerHTML = `
+    <div class="prog-score">
+      <div class="prog-score-num">${score}%</div>
+      <div class="prog-score-body">
+        <div class="prog-score-label">Klausur-Bereitschaft</div>
+        <div class="prog-score-sub">${done} von ${total} Themen abgehakt</div>
+        <div class="prog-score-bar"><div class="prog-score-fill" style="width:${score}%"></div></div>
+      </div>
+    </div>`;
+  document.getElementById('prog-modules').innerHTML = MODULES.map(m => {
+    const pct = Math.round((m.themen.filter((_,i)=>data[m.id]?.[i]).length / m.themen.length)*100);
+    return `<div class="mod-card">
+      <div class="mod-card-head" onclick="toggleModCard('${m.id}')">
+        <span class="mod-card-name">${m.name}</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="mod-pct" style="color:${m.color}">${pct}%</span>
+          <span class="mod-chevron" id="chev-${m.id}">›</span>
+        </div>
+      </div>
+      <div class="mod-bar-wrap"><div class="mod-bar-fill" style="width:${pct}%;background:${m.color}"></div></div>
+      <div class="mod-topics" id="topics-${m.id}">
+        ${m.themen.map((t,i) => `<div class="topic-row" onclick="toggleTopic('${m.id}',${i})">
+          <div class="topic-check${data[m.id]?.[i]?' done':''}">${data[m.id]?.[i]?'✓':''}</div>
+          <span class="topic-label${data[m.id]?.[i]?' done':''}">${t}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Backup Status Pill ─────────────────────────────────
+function setBackupStatus(state, text) {
+  const dot = document.getElementById('backup-dot');
+  const span = document.getElementById('backup-text');
+  if (!dot||!span) return;
+  dot.className = 'dot' + (state==='ok'?' ok':state==='err'?' err':state==='spin'?' spin':'');
+  span.textContent = text;
+}
+
+// ── GitHub Gist Backup ─────────────────────────────────
+let backupTimer = null;
+function scheduleAutoBackup() { clearTimeout(backupTimer); backupTimer = setTimeout(autoBackup, 3000); }
+
+function getAllData() {
+  return {
+    fortschritt: loadFortschritt(),
+    courses:    JSON.parse(localStorage.getItem('syn-stundenplan-v2') || 'null'),
+    klausuren:  JSON.parse(localStorage.getItem('syn-klausuren') || '[]'),
+    notizen:    JSON.parse(localStorage.getItem('syn-notizen') || '[]'),
+    backed_up:  new Date().toISOString()
+  };
+}
+
+async function doGistBackup(token) {
+  const payload = {
+    description: 'Synotix Stundenplan SoSe 2026 — Cloud Backup',
+    public: false,
+    files: { 'stundenplan-backup.json': { content: JSON.stringify(getAllData(), null, 2) } }
+  };
+  const gistId = localStorage.getItem('syn-gist-id');
+  const res = await fetch(gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists', {
+    method: gistId ? 'PATCH' : 'POST',
+    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const data = await res.json();
+  if (!gistId) localStorage.setItem('syn-gist-id', data.id);
+  return data;
+}
+
+async function autoBackup() {
+  const token = localStorage.getItem('syn-gist-token');
+  if (!token) return;
+  setBackupStatus('spin', 'Sichern…');
+  try {
+    await doGistBackup(token);
+    const t = new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    localStorage.setItem('syn-gist-last', t);
+    setBackupStatus('ok', t);
+  } catch { setBackupStatus('err', 'Fehler'); }
+}
+
+async function manualBackup() {
+  const token = localStorage.getItem('syn-gist-token');
+  if (!token) { alert('Bitte zuerst deinen GitHub Token eingeben und speichern.'); return; }
+  setBackupStatus('spin', 'Sichern…');
+  try {
+    await doGistBackup(token);
+    const t = new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    localStorage.setItem('syn-gist-last', t);
+    setBackupStatus('ok', t);
+    refreshSettingsStatus();
+    alert('✓ Backup erfolgreich gespeichert!');
+  } catch(e) {
+    setBackupStatus('err', 'Fehler');
+    alert('Backup fehlgeschlagen: ' + e.message);
+  }
+}
+
+async function restoreFromGist() {
+  const token  = localStorage.getItem('syn-gist-token');
+  const gistId = localStorage.getItem('syn-gist-id');
+  if (!token || !gistId) { alert('Kein Backup gefunden. Bitte zuerst Token eingeben und ein Backup erstellen.'); return; }
+  if (!confirm('Alle lokalen Daten mit dem Cloud-Backup überschreiben?')) return;
+  try {
+    const res  = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { Authorization: `token ${token}` } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const gist = await res.json();
+    const raw  = gist.files['stundenplan-backup.json']?.content;
+    if (!raw) throw new Error('Backup-Datei nicht gefunden');
+    const data = JSON.parse(raw);
+    if (data.fortschritt) localStorage.setItem('syn-fortschritt', JSON.stringify(data.fortschritt));
+    if (data.courses)     localStorage.setItem('syn-stundenplan-v2', JSON.stringify(data.courses));
+    if (data.klausuren)   localStorage.setItem('syn-klausuren', JSON.stringify(data.klausuren));
+    if (data.notizen)     localStorage.setItem('syn-notizen', JSON.stringify(data.notizen));
+    renderProgress();
+    refreshSettingsStatus();
+    alert('✓ Backup wiederhergestellt!');
+  } catch(e) { alert('Fehler: ' + e.message); }
+}
+
+function saveGistToken() {
+  const val = document.getElementById('gist-token-input').value.trim();
+  if (!val) { alert('Bitte Token eingeben!'); return; }
+  localStorage.setItem('syn-gist-token', val);
+  document.getElementById('gist-token-input').value = '';
+  refreshSettingsStatus();
+  autoBackup();
+  alert('✓ Token gespeichert! Erstes Backup läuft…');
+}
+
+function refreshSettingsStatus() {
+  const hasToken = !!localStorage.getItem('syn-gist-token');
+  const gistId   = localStorage.getItem('syn-gist-id');
+  const last     = localStorage.getItem('syn-gist-last');
+  const el = document.getElementById('gist-status');
+  if (el) {
+    el.innerHTML = hasToken
+      ? `Token: ✓ gespeichert<br>Gist-ID: ${gistId || '(wird beim ersten Backup erstellt)'}<br>Letztes Backup: ${last || '—'}`
+      : 'Noch kein Token gespeichert.';
+  }
+  setBackupStatus(hasToken ? 'ok' : '', hasToken ? (last || '—') : '—');
+}
+
+// ── ICS Export ─────────────────────────────────────────
+function exportAsICS() {
+  const DAY_OFFSET = {Mo:0,Di:1,Mi:2,Do:3,Fr:4};
+  const SEM_START  = new Date('2026-04-06');
+  function pad(n) { return String(n).padStart(2,'0'); }
+  function icsDate(base, time) {
+    const [h,m] = time.split(':');
+    return `${base.getFullYear()}${pad(base.getMonth()+1)}${pad(base.getDate())}T${pad(h)}${pad(m)}00`;
+  }
+  const courses   = JSON.parse(localStorage.getItem('syn-stundenplan-v2') || '[]');
+  const klausuren = JSON.parse(localStorage.getItem('syn-klausuren') || '[]');
+  let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Synotix Stundenplan//DE\r\nCALSCALE:GREGORIAN\r\n';
+  courses.forEach(c => {
+    const d = new Date(SEM_START); d.setDate(d.getDate()+(DAY_OFFSET[c.day]||0));
+    ics += `BEGIN:VEVENT\r\nUID:syn-${c.id}@stundenplan\r\nSUMMARY:${c.name}\r\nDTSTART:${icsDate(d,c.start)}\r\nDTEND:${icsDate(d,c.end)}\r\nRRULE:FREQ=WEEKLY;UNTIL=20260718T235959Z\r\nLOCATION:${c.room||''}\r\nDESCRIPTION:${c.prof||''}\r\nEND:VEVENT\r\n`;
+  });
+  klausuren.forEach(k => {
+    const [y,mo,d] = k.date.split('-'); const [h,m] = (k.time||'09:00').split(':');
+    ics += `BEGIN:VEVENT\r\nUID:syn-k-${k.id}@stundenplan\r\nSUMMARY:${k.name}\r\nDTSTART:${y}${mo}${d}T${h}${m}00\r\nDTEND:${y}${mo}${d}T${pad(parseInt(h)+2)}${m}00\r\nBEGIN:VALARM\r\nTRIGGER:-PT24H\r\nACTION:DISPLAY\r\nDESCRIPTION:Morgen: ${k.name}\r\nEND:VALARM\r\nEND:VEVENT\r\n`;
+  });
+  ics += 'END:VCALENDAR';
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([ics],{type:'text/calendar'})),
+    download: 'stundenplan-sose26.ics'
+  });
+  a.click();
+}
+
+// ── Google Calendar Links ──────────────────────────────
+function generateGCalLinks() {
+  const DAY_OFFSET = {Mo:0,Di:1,Mi:2,Do:3,Fr:4};
+  const SEM_START  = new Date('2026-04-06');
+  function pad(n) { return String(n).padStart(2,'0'); }
+  function gcalDt(dayKey, time) {
+    const d = new Date(SEM_START); d.setDate(d.getDate()+(DAY_OFFSET[dayKey]||0));
+    const [h,m]=time.split(':');
+    return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${h}${m}00`;
+  }
+  const courses   = JSON.parse(localStorage.getItem('syn-stundenplan-v2') || '[]');
+  const klausuren = JSON.parse(localStorage.getItem('syn-klausuren') || '[]');
+  const el = document.getElementById('gcal-links');
+  const rows = [
+    ...courses.map(c => `<a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(c.name)}&dates=${gcalDt(c.day,c.start)}/${gcalDt(c.day,c.end)}&location=${encodeURIComponent(c.room||'')}&details=${encodeURIComponent((c.prof||'')+' · Wöchentlich')}" target="_blank">${c.day} ${c.start} · ${c.name}</a>`),
+    ...klausuren.map(k => { const [y,mo,d]=k.date.split('-'),t=(k.time||'09:00').replace(':',''); return `<a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(k.name)}&dates=${y}${mo}${d}T${t}00/${y}${mo}${d}T${pad(parseInt(t.slice(0,2))+2)}${t.slice(2)}00" target="_blank" style="background:var(--violet-glow);border-color:var(--violet-line);color:var(--violet)">${k.date} · ${k.name} (Klausur)</a>`; })
+  ];
+  el.innerHTML = `<p style="font-family:var(--f-mono);font-size:9px;color:var(--tx-2);margin-bottom:8px;letter-spacing:0.10em">KLICK ÖFFNET GOOGLE CALENDAR — TIPP: ERST KURSE IN DER MOBILEN APP ANLEGEN</p>` + rows.join('');
+  el.style.display = 'block';
+}
+
+// ── JSON Export / Import ───────────────────────────────
+function exportJSON() {
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([JSON.stringify(getAllData(),null,2)],{type:'application/json'})),
+    download: 'stundenplan-backup.json'
+  });
+  a.click();
+}
+function importJSON(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!confirm('Alle lokalen Daten mit dem Backup überschreiben?')) return;
+      if (data.fortschritt) localStorage.setItem('syn-fortschritt', JSON.stringify(data.fortschritt));
+      if (data.courses)     localStorage.setItem('syn-stundenplan-v2', JSON.stringify(data.courses));
+      if (data.klausuren)   localStorage.setItem('syn-klausuren', JSON.stringify(data.klausuren));
+      if (data.notizen)     localStorage.setItem('syn-notizen', JSON.stringify(data.notizen));
+      renderProgress();
+      document.getElementById('import-status').textContent = `✓ Importiert: ${data.courses?.length||0} Kurse, ${data.klausuren?.length||0} Prüfungen, ${data.notizen?.length||0} Notizen, Fortschritt gespeichert`;
+    } catch(err) { document.getElementById('import-status').textContent = 'Fehler: ' + err.message; }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ── Init ───────────────────────────────────────────────
+refreshSettingsStatus();
+</script>
+
+</body>
+</html>

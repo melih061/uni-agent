@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.playwright/
+playwright-browsers/
+*.log
+logs/
+.DS_Store
