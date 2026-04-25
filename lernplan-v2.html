@@ -620,15 +620,15 @@
 <!-- ══════ TABS ══════ -->
 <div class="tab-strip">
   <button class="tab-btn active" onclick="switchTab(0)">Überblick</button>
-  <button class="tab-btn" onclick="switchTab(1)">Wochenplan</button>
-  <button class="tab-btn" onclick="switchTab(2)">Methoden</button>
-  <button class="tab-btn" onclick="switchTab(3)">Module</button>
-  <button class="tab-btn" onclick="switchTab(4)">Klausurphase</button>
-  <button class="tab-btn" onclick="switchTab(5)">Goldene Regeln</button>
-  <button class="tab-btn" onclick="switchTab(6)">Fortschritt</button>
-  <button class="tab-btn" onclick="switchTab(7)">Einstellungen</button>
-  <button class="tab-btn" onclick="switchTab(8)">Abgaben</button>
-  <button class="tab-btn" onclick="switchTab(9)">Chat</button>
+  <button class="tab-btn" onclick="switchTab(1)">Abgaben</button>
+  <button class="tab-btn" onclick="switchTab(2)">Chat</button>
+  <button class="tab-btn" onclick="switchTab(3)">Wochenplan</button>
+  <button class="tab-btn" onclick="switchTab(4)">Methoden</button>
+  <button class="tab-btn" onclick="switchTab(5)">Module</button>
+  <button class="tab-btn" onclick="switchTab(6)">Klausurphase</button>
+  <button class="tab-btn" onclick="switchTab(7)">Goldene Regeln</button>
+  <button class="tab-btn" onclick="switchTab(8)">Fortschritt</button>
+  <button class="tab-btn" onclick="switchTab(9)">Einstellungen</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -1419,13 +1419,16 @@
 <!-- ══════ SCRIPT ══════ -->
 <script>
 // ── Tab switching ──────────────────────────────────────
+// Tab-Index → View-ID Mapping (entkoppelt von DOM-Reihenfolge)
+const TAB_MAP = ['v0','v8','v9','v1','v2','v3','v4','v5','v6','v7'];
+
 function switchTab(i) {
   document.querySelectorAll('.tab-btn').forEach((t,j) => t.classList.toggle('active', j===i));
-  document.querySelectorAll('.view').forEach((v,j) => v.classList.toggle('active', j===i));
+  TAB_MAP.forEach((id,j) => document.getElementById(id).classList.toggle('active', j===i));
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (i === 6) renderProgress();
-  if (i === 7) refreshSettingsStatus();
-  if (i === 8) loadDeadlines();
+  if (i === 1) loadDeadlines();
+  if (i === 8) renderProgress();
+  if (i === 9) refreshSettingsStatus();
 }
 
 // ── Abgaben ──────────────────────────────────────────────
