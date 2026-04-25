@@ -1424,7 +1424,7 @@ const TAB_MAP = ['v0','v8','v9','v1','v2','v3','v4','v5','v6','v7'];
 
 function switchTab(i) {
   document.querySelectorAll('.tab-btn').forEach((t,j) => t.classList.toggle('active', j===i));
-  TAB_MAP.forEach((id,j) => document.getElementById(id).classList.toggle('active', j===i));
+  TAB_MAP.forEach((id,j) => document.getElementById(id)?.classList.toggle('active', j===i));
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (i === 1) loadDeadlines();
   if (i === 8) renderProgress();
@@ -1504,7 +1504,7 @@ function quickAsk() {
   if (!text) return;
   input.value = '';
   // Chat-Tab öffnen und Nachricht direkt senden
-  switchTab(9);
+  switchTab(2);
   document.getElementById('chat-input').value = text;
   sendChat();
 }
