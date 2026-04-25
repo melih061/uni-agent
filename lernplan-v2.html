@@ -1393,7 +1393,8 @@
   <p class="section-desc">Fristen werden live aus LEA, der Analysis-Seite und ACAT geladen. Starte dafür den lokalen Server: <code style="font-family:var(--f-mono);font-size:12px;background:var(--bg-2);padding:2px 6px">python server.py</code></p>
 
   <div class="dl-refresh">
-    <button class="dl-refresh-btn" onclick="loadDeadlines()">Neu laden</button>
+    <button class="dl-refresh-btn" onclick="loadDeadlines(false)">Aktualisieren</button>
+    <button class="dl-refresh-btn" onclick="refreshLEA()" id="lea-refresh-btn" style="margin-left:4px">LEA komplett neu laden</button>
     <span class="dl-last-update" id="dl-last-update"></span>
   </div>
 
@@ -1495,6 +1496,25 @@ async function loadDeadlines(force = false) {
   } catch(e) {
     list.innerHTML = '<div class="dl-empty">Server nicht erreichbar.<br><code style="font-family:var(--f-mono);font-size:12px">python server.py</code> starten.</div>';
   }
+}
+
+// ── LEA Komplett-Refresh ─────────────────────────────────
+async function refreshLEA() {
+  const btn = document.getElementById('lea-refresh-btn');
+  const upd = document.getElementById('dl-last-update');
+  btn.disabled = true;
+  btn.textContent = 'Scrapt LEA… (~2 Min)';
+  upd.textContent = '';
+  try {
+    await fetch(`${API_BASE}/api/lea-refresh`, { method: 'POST', signal: AbortSignal.timeout(180000) });
+    _deadlinesCache = null;
+    await loadDeadlines(true);
+    btn.textContent = 'LEA komplett neu laden';
+  } catch(e) {
+    upd.textContent = 'Fehler beim Refresh';
+    btn.textContent = 'LEA komplett neu laden';
+  }
+  btn.disabled = false;
 }
 
 // ── Quick Ask (Überblick → Chat) ──────────────────────────
