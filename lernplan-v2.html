@@ -521,6 +521,17 @@
     #gcal-links a { display:block; padding:8px 12px; margin-bottom:4px; background:var(--bg-2); color:var(--tx-0); text-decoration:none; font-family:var(--f-mono); font-size:11px; border:1px solid var(--bd); }
     #gcal-links a:hover { border-color:var(--violet); color:var(--violet); }
 
+    /* ══════ QUICK ASK (Überblick) ══════ */
+    .quick-ask-wrap { display: flex; gap: 8px; margin-bottom: 8px; }
+    .quick-ask-input { flex: 1; background: var(--bg-1); border: 1px solid var(--bd); color: var(--tx-0); font-family: var(--f-body); font-size: 14px; padding: 10px 14px; outline: none; transition: border-color var(--t-fast); }
+    .quick-ask-input:focus { border-color: var(--violet); }
+    .quick-ask-btn { background: var(--violet); color: #fff; border: none; padding: 10px 18px; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
+    .quick-ask-btn:hover { background: var(--violet-dim); }
+    .next-dl-card { background: var(--bg-1); border-left: 4px solid var(--violet); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .next-dl-info .next-dl-title { font-weight: 600; font-size: 14px; }
+    .next-dl-info .next-dl-sub   { font-family: var(--f-mono); font-size: 11px; color: var(--tx-2); margin-top: 3px; }
+    .next-dl-days { font-family: var(--f-mono); font-size: 22px; font-weight: 700; color: var(--violet); }
+
     /* ══════ ABGABEN TAB ══════ */
     .deadline-card {
       background: var(--bg-1);
@@ -696,6 +707,23 @@
   <div class="abgabe-card">
     <div class="abg-top"><span class="abg-name">Sonstige Module</span><span class="abg-freq">Verschieden</span></div>
     <div class="abg-tip">Sofort nach Erhalt notieren. Innerhalb von 48h erledigen. Samstag = Puffer-Tag für offene Abgaben.</div>
+  </div>
+
+  <hr class="section-rule">
+
+  <!-- NÄCHSTE FRIST -->
+  <span class="eyebrow">Nächste Abgabe</span>
+  <div id="next-deadline-box" style="margin-bottom:24px">
+    <div class="dl-loading" style="padding:16px 0">Lade…</div>
+  </div>
+
+  <!-- QUICK ASK -->
+  <span class="eyebrow">Lern-Assistent</span>
+  <div class="quick-ask-wrap">
+    <input class="quick-ask-input" id="quick-ask-input" type="text"
+      placeholder="Frag mich was — z.B. &quot;Was ist heute dringend?&quot;"
+      onkeydown="if(event.key==='Enter')quickAsk()">
+    <button class="quick-ask-btn" onclick="quickAsk()">Fragen</button>
   </div>
 </div>
 
@@ -1402,14 +1430,48 @@ function switchTab(i) {
 
 // ── Abgaben ──────────────────────────────────────────────
 const API_BASE = 'http://localhost:8000';
+let _deadlinesCache = null;
 
-async function loadDeadlines() {
+async function fetchDeadlines() {
+  if (_deadlinesCache) return _deadlinesCache;
+  try {
+    const res = await fetch(`${API_BASE}/api/deadlines`, { signal: AbortSignal.timeout(60000) });
+    _deadlinesCache = await res.json();
+  } catch(e) { _deadlinesCache = []; }
+  return _deadlinesCache;
+}
+
+async function renderNextDeadline() {
+  const box = document.getElementById('next-deadline-box');
+  if (!box) return;
+  const data = await fetchDeadlines();
+  if (!data.length) { box.innerHTML = '<div class="dl-empty" style="padding:12px 0;text-align:left">Server starten um Fristen zu laden.</div>'; return; }
+  const now = new Date();
+  const next = data.find(d => new Date(d.due_date) > now) || data[0];
+  const due  = new Date(next.due_date);
+  const days = Math.ceil((due - now) / 86400000);
+  box.innerHTML = `<div class="next-dl-card">
+    <div class="next-dl-info">
+      <div class="next-dl-title">${next.title}</div>
+      <div class="next-dl-sub">${next.course} · ${due.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>
+    </div>
+    <div class="next-dl-days">${days <= 0 ? 'Heute' : days + 'd'}</div>
+  </div>`;
+}
+
+// Überblick lädt beim Start die nächste Frist
+renderNextDeadline();
+
+async function loadDeadlines(force = false) {
   const list = document.getElementById('dl-list');
   const upd  = document.getElementById('dl-last-update');
   list.innerHTML = '<div class="dl-loading">Lade Fristen vom Server…</div>';
   try {
-    const res  = await fetch(`${API_BASE}/api/deadlines`, { signal: AbortSignal.timeout(60000) });
+    const url  = force ? `${API_BASE}/api/deadlines?refresh=true` : `${API_BASE}/api/deadlines`;
+    const res  = await fetch(url, { signal: AbortSignal.timeout(90000) });
     const data = await res.json();
+    _deadlinesCache = data;
+    renderNextDeadline();
     upd.textContent = 'Aktualisiert: ' + new Date().toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'});
     if (!data.length) { list.innerHTML = '<div class="dl-empty">Keine Fristen gefunden.</div>'; return; }
     const now = new Date();
@@ -1430,6 +1492,18 @@ async function loadDeadlines() {
   } catch(e) {
     list.innerHTML = '<div class="dl-empty">Server nicht erreichbar.<br><code style="font-family:var(--f-mono);font-size:12px">python server.py</code> starten.</div>';
   }
+}
+
+// ── Quick Ask (Überblick → Chat) ──────────────────────────
+function quickAsk() {
+  const input = document.getElementById('quick-ask-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  // Chat-Tab öffnen und Nachricht direkt senden
+  switchTab(9);
+  document.getElementById('chat-input').value = text;
+  sendChat();
 }
 
 // ── Chat ─────────────────────────────────────────────────

@@ -1,4 +1,5 @@
 import asyncio
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -22,20 +23,13 @@ IGNORED_COURSES = {
     "Einführung in das IT-Recht",
 }
 
-SYSTEM_PROMPT = """Du bist ein persönlicher Lern-Assistent für einen Wirtschaftsinformatik-Studenten
-im 4. Semester an der H-BRS (SoSe 2026).
-Kurse: Analysis, Datenbanken, Algorithmen & Datenstrukturen, Mathe für Data Science,
-Künstliche Intelligenz, Datenanalyse & Visualisierung, Planspiel.
-Antworte auf Deutsch, casual (du), kurz und konkret. Nutze Markdown für Listen und Code."""
+# ── Deadline Cache (30 Min TTL) ────────────────────────────
+_cache: list[dict] = []
+_cache_ts: float = 0
+_CACHE_TTL = 1800  # 30 Minuten
 
 
-@app.get("/", response_class=HTMLResponse)
-async def serve_html() -> str:
-    return HTML_PATH.read_text(encoding="utf-8")
-
-
-@app.get("/api/deadlines")
-async def get_deadlines() -> list[dict]:
+async def _fetch_deadlines() -> list[dict]:
     from scraper.lea_scraper import scrape_all_deadlines
     from scraper.analysis_scraper import scrape_analysis_deadlines
     from scraper.acat_scraper import scrape_acat_deadlines
@@ -45,22 +39,73 @@ async def get_deadlines() -> list[dict]:
         asyncio.to_thread(scrape_analysis_deadlines),
         scrape_acat_deadlines(headless=True),
     )
-
-    all_deadlines = sorted(
+    all_d = sorted(
         [d for d in lea if d.course not in IGNORED_COURSES] + analysis + acat,
         key=lambda d: d.due_date,
     )
-
     return [
-        {
-            "course": d.course,
-            "title": d.title,
-            "due_date": d.due_date.isoformat(),
-            "type": d.type,
-            "url": d.url,
-        }
-        for d in all_deadlines
+        {"course": d.course, "title": d.title,
+         "due_date": d.due_date.isoformat(), "type": d.type, "url": d.url}
+        for d in all_d
     ]
+
+
+async def get_deadlines_cached(force: bool = False) -> list[dict]:
+    global _cache, _cache_ts
+    if force or not _cache or time.time() - _cache_ts > _CACHE_TTL:
+        _cache = await _fetch_deadlines()
+        _cache_ts = time.time()
+    return _cache
+
+
+def _build_system_prompt(deadlines: list[dict]) -> str:
+    from datetime import datetime
+    today = datetime.now()
+
+    if deadlines:
+        lines = []
+        for d in deadlines:
+            due = datetime.fromisoformat(d["due_date"])
+            days = (due - today).days
+            days_str = "HEUTE" if days == 0 else f"in {days}d" if days > 0 else "ABGELAUFEN"
+            lines.append(f"  • [{d['course']}] {d['title']} — {due.strftime('%d.%m.%Y')} ({days_str})")
+        deadlines_text = "\n".join(lines)
+    else:
+        deadlines_text = "  (Keine Fristen geladen — Server neu starten)"
+
+    return f"""Du bist Melihs persönlicher Lern-Assistent. Melih studiert Wirtschaftsinformatik im 4. Semester an der H-BRS (SoSe 2026).
+
+AKTUELLE FRISTEN (live aus LEA, Analysis & ACAT):
+{deadlines_text}
+
+KURSE DIESES SEMESTERS:
+  • Analysis — ACAT-Tests, Übungsblätter (pbecke2m-Seite)
+  • Datenbanken — wöchentliche Abgaben via LEA
+  • Algorithmen & Datenstrukturen — ACAT-Abgaben
+  • Mathe für Data Science
+  • Künstliche Intelligenz — optionale Jupyter-Notebooks
+  • Datenanalyse & Visualisierung — optionale Jupyter-Notebooks
+  • Planspiel (Topsim)
+
+WOCHENSTRUKTUR:
+  • Mo + Do: Uni vor Ort
+  • Di + Mi: Arbeit (8h, Vorlesungen als Aufzeichnung nachholen)
+  • Fr–So: Lernen, Startup, Gym
+
+Antworte auf Deutsch, casual (du), kurz und konkret. Nutze Markdown für Listen und Code.
+Wenn du nach Fristen gefragt wirst, beziehe dich auf die obige Liste."""
+
+
+# ── Endpoints ──────────────────────────────────────────────
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_html() -> str:
+    return HTML_PATH.read_text(encoding="utf-8")
+
+
+@app.get("/api/deadlines")
+async def get_deadlines(refresh: bool = False) -> list[dict]:
+    return await get_deadlines_cached(force=refresh)
 
 
 class ChatRequest(BaseModel):
@@ -72,9 +117,12 @@ class ChatRequest(BaseModel):
 async def chat(req: ChatRequest) -> dict:
     from agent.llm_client import get_client
 
+    deadlines = await get_deadlines_cached()
+    system = _build_system_prompt(deadlines)
+
     client = get_client()
     messages = req.history + [{"role": "user", "content": req.message}]
-    response = await asyncio.to_thread(client.chat, system=SYSTEM_PROMPT, messages=messages)
+    response = await asyncio.to_thread(client.chat, system=system, messages=messages)
     return {"response": response}
 
 
