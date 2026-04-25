@@ -106,19 +106,31 @@
       padding-left: 1px;
     }
 
-    /* ══════ TABS ══════ */
-    .tab-strip {
-      background: var(--bg-1);
-      border-bottom: 1px solid var(--bd);
+    /* ══════ LAYOUT ══════ */
+    .app-body {
       display: flex;
-      flex-wrap: wrap;
+      height: calc(100vh - 56px);
+      overflow: hidden;
+    }
+
+    /* ══════ SIDEBAR ══════ */
+    .tab-strip {
+      width: 168px;
+      flex-shrink: 0;
+      background: var(--bg-1);
+      border-right: 1px solid var(--bd);
+      display: flex;
+      flex-direction: column;
+      padding: 12px 0;
+      overflow-y: auto;
       position: sticky;
       top: 56px;
-      z-index: 90;
+      height: 100%;
     }
     .tab-btn {
-      flex: 0 0 auto;
-      padding: 12px 16px 10px;
+      display: block;
+      width: 100%;
+      padding: 9px 18px 9px 16px;
       font-family: var(--f-mono);
       font-size: 10px;
       letter-spacing: 0.10em;
@@ -126,20 +138,47 @@
       color: var(--tx-2);
       background: none;
       border: none;
-      border-bottom: 2px solid transparent;
+      border-left: 2px solid transparent;
       cursor: pointer;
       transition: all var(--t-fast);
+      text-align: left;
       white-space: nowrap;
     }
     .tab-btn.active {
       color: var(--violet);
-      border-bottom-color: var(--violet);
+      border-left-color: var(--violet);
+      background: var(--violet-glow);
     }
-    .tab-btn:hover:not(.active) { color: var(--tx-1); }
+    .tab-btn:hover:not(.active) {
+      color: var(--tx-1);
+      background: var(--bg-2);
+    }
 
     /* ══════ VIEWS ══════ */
-    .view { display: none; padding: 24px 16px 48px; max-width: 720px; margin: 0 auto; }
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      min-width: 0;
+    }
+    .view { display: none; padding: 24px 24px 48px; max-width: 720px; }
     .view.active { display: block; }
+
+    /* ══════ MOBILE SIDEBAR ══════ */
+    @media (max-width: 600px) {
+      .app-body { flex-direction: column; height: auto; overflow: visible; }
+      .tab-strip {
+        width: 100%; height: auto; flex-direction: row; flex-wrap: wrap;
+        position: sticky; top: 56px; z-index: 90; border-right: none;
+        border-bottom: 1px solid var(--bd); padding: 0;
+      }
+      .tab-btn {
+        border-left: none; border-bottom: 2px solid transparent;
+        padding: 10px 12px 8px;
+      }
+      .tab-btn.active { border-left-color: transparent; border-bottom-color: var(--violet); }
+      .content-area { overflow-y: visible; }
+      .view { padding: 20px 16px 48px; }
+    }
 
     /* ══════ TYPOGRAPHY ══════ */
     .eyebrow {
@@ -438,9 +477,10 @@
       --tx-0: #F5F3FF; --tx-1: #C4C0E0; --tx-2: #8580A0; --tx-3: #504C6A;
       --bd: rgba(255,255,255,0.07); --bd-hi: rgba(255,255,255,0.13);
     }
-    [data-theme="dark"] .tab-strip { background: var(--bg-1); }
+    [data-theme="dark"] .tab-strip { background: var(--bg-1); border-color: var(--bd); }
     [data-theme="dark"] .tab-btn { color: var(--tx-2); }
-    [data-theme="dark"] .tab-btn.active { color: var(--violet-mid); border-bottom-color: var(--violet-mid); }
+    [data-theme="dark"] .tab-btn.active { color: var(--violet-mid); border-left-color: var(--violet-mid); background: rgba(124,58,237,0.08); }
+    [data-theme="dark"] .tab-btn:hover:not(.active) { background: var(--bg-2); }
     .theme-btn {
       background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--tx-inv1);
       cursor: pointer; padding: 5px 12px; font-family: var(--f-mono); font-size: 10px;
@@ -566,7 +606,7 @@
     .dl-last-update { font-family: var(--f-mono); font-size: 10px; color: var(--tx-3); }
 
     /* ══════ CHAT TAB ══════ */
-    .chat-wrap   { display: flex; flex-direction: column; height: calc(100dvh - 120px); max-height: 700px; }
+    .chat-wrap   { display: flex; flex-direction: column; height: calc(100dvh - 160px); }
     .chat-msgs   { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
     .chat-bubble { max-width: 85%; padding: 10px 14px; font-size: 14px; line-height: 1.55; }
     .chat-bubble.user  { background: var(--violet); color: #fff; align-self: flex-end; }
@@ -617,7 +657,9 @@
   </div>
 </nav>
 
-<!-- ══════ TABS ══════ -->
+<div class="app-body">
+
+<!-- ══════ SIDEBAR ══════ -->
 <div class="tab-strip">
   <button class="tab-btn active" onclick="switchTab(0)">Überblick</button>
   <button class="tab-btn" onclick="switchTab(1)">Abgaben</button>
@@ -631,6 +673,7 @@
   <button class="tab-btn" onclick="switchTab(9)">Einstellungen</button>
 </div>
 
+<div class="content-area" id="content-area">
 <!-- ═══════════════════════════════════════════════════════
      TAB 0 — ÜBERBLICK
 ═══════════════════════════════════════════════════════ -->
@@ -1428,6 +1471,9 @@
   </div>
 </div>
 
+</div><!-- /content-area -->
+</div><!-- /app-body -->
+
 <!-- ══════ SCRIPT ══════ -->
 <script>
 // ── Tab switching ──────────────────────────────────────
@@ -1437,7 +1483,7 @@ const TAB_MAP = ['v0','v8','v9','v1','v2','v3','v4','v5','v6','v7'];
 function switchTab(i) {
   document.querySelectorAll('.tab-btn').forEach((t,j) => t.classList.toggle('active', j===i));
   TAB_MAP.forEach((id,j) => document.getElementById(id)?.classList.toggle('active', j===i));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('content-area')?.scrollTo({ top: 0, behavior: 'smooth' });
   if (i === 1) loadDeadlines();
   if (i === 8) renderProgress();
   if (i === 9) refreshSettingsStatus();
